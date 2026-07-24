@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventory Notebook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#efe6d2;
+    --paper-dark:#e6dac0;
+    --rule:rgba(93,120,153,0.28);
+    --margin-red:#c0524b;
+    --ink:#2b2b2b;
+    --ink-soft:#5b5344;
+    --accent-yellow:#f4d35e;
+    --tab-1:#c0524b;
+    --tab-2:#5c7a5e;
+    --tab-3:#5d7899;
+    --tab-4:#c68a3e;
+    --tab-5:#8a6a9e;
+    --shadow: 0 6px 16px rgba(0,0,0,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background: var(--paper-dark);
+    font-family:'Patrick Hand', cursive;
+    color: var(--ink);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding: 24px 12px 60px;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(0,0,0,0.03), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(0,0,0,0.03), transparent 40%);
+  }
+
+  .notebook{
+    width:100%;
+    max-width:760px;
+    position:relative;
+  }
+
+  .cover{
+    text-align:center;
+    margin-bottom:18px;
+  }
+  .cover h1{
+    font-family:'Kalam', cursive;
+    font-weight:700;
+    font-size:2.1rem;
+    color:var(--ink);
+    margin:0;
+    transform: rotate(-1deg);
+  }
+  .cover p{
+    margin:4px 0 0;
+    color:var(--ink-soft);
+    font-size:1rem;
+  }
+
+  .export-btn{
+    margin-top:10px;
+    font-family:'Kalam', cursive;
+    font-weight:700;
+    font-size:0.9rem;
+    background: transparent;
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 6px 16px;
+    cursor:pointer;
+    transform: rotate(0.5deg);
+  }
+  .export-btn:hover{ background: var(--ink); color: var(--paper); }
+
+  .page-wrap{
+    position:relative;
+    display:flex;
+  }
+
+  .tabs{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:46px;
+    margin-right:-2px;
+    z-index:2;
+  }
+  .tab{
+    font-family:'Kalam', cursive;
+    font-weight:700;
+    font-size:0.95rem;
+    color:#fff;
+    padding:10px 14px 10px 16px;
+    border-radius:8px 0 0 8px;
+    cursor:pointer;
+    box-shadow: -2px 3px 6px rgba(0,0,0,0.15);
+    opacity:0.82;
+    transform: translateX(6px);
+    transition: transform .15s ease, opacity .15s ease;
+    white-space:nowrap;
+    border:none;
+    text-align:left;
+  }
+  .tab:hover{ transform: translateX(0px); opacity:1;}
+  .tab.active{ transform: translateX(0px); opacity:1; }
+  .tab-add{
+    background:transparent !important;
+    color:var(--ink-soft) !important;
+    box-shadow:none;
+    border:2px dashed var(--ink-soft) !important;
+    opacity:0.6;
+  }
+
+  .page{
+    flex:1;
+    background: var(--paper);
+    background-image: repeating-linear-gradient(
+        var(--paper),
+        var(--paper) 31px,
+        var(--rule) 32px
+      );
+    border-radius: 4px 10px 10px 10px;
+    box-shadow: var(--shadow);
+    padding: 26px 22px 30px 56px;
+    position:relative;
+    min-height:420px;
+  }
+  .page::before{
+    content:"";
+    position:absolute;
+    left:34px; top:0; bottom:0;
+    width:2px;
+    background: var(--margin-red);
+    opacity:0.55;
+  }
+
+  .location-title{
+    font-family:'Kalam', cursive;
+    font-weight:700;
+    font-size:1.4rem;
+    margin: 0 0 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .location-title .del-loc{
+    font-family:'Space Mono', monospace;
+    font-size:0.7rem;
+    color:var(--ink-soft);
+    background:none;
+    border:1px solid var(--ink-soft);
+    border-radius:6px;
+    padding:3px 8px;
+    cursor:pointer;
+    opacity:0.6;
+  }
+  .location-title .del-loc:hover{opacity:1;}
+
+  .item-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:5px 0;
+    gap:10px;
+  }
+  .item-name{
+    font-size:1.15rem;
+    flex:1;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .item-count{
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:1rem;
+    background: var(--accent-yellow);
+    padding:2px 10px;
+    border-radius: 5px;
+    transform: rotate(-1deg);
+    min-width:34px;
+    text-align:center;
+  }
+  .item-actions{
+    display:flex;
+    gap:4px;
+  }
+  .icon-btn{
+    font-family:'Space Mono', monospace;
+    width:26px; height:26px;
+    border-radius:50%;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+    font-size:0.95rem;
+    line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0.75;
+  }
+  .icon-btn:hover{opacity:1; background:rgba(0,0,0,0.05);}
+  .item-tag-btn{
+    font-family:'Space Mono', monospace;
+    font-size:0.65rem;
+    color:var(--ink-soft);
+    background:none;
+    border:none;
+    cursor:pointer;
+    text-decoration:underline;
+    opacity:0.65;
+    padding:0;
+  }
+
+  .empty-note{
+    font-size:1.05rem;
+    color:var(--ink-soft);
+    font-style:italic;
+    margin-top:10px;
+  }
+
+  .add-item-row{
+    display:flex;
+    gap:8px;
+    margin-top:16px;
+    flex-wrap:wrap;
+  }
+  .add-item-row input{
+    font-family:'Patrick Hand', cursive;
+    font-size:1.05rem;
+    background:transparent;
+    border:none;
+    border-bottom: 2px dotted var(--ink-soft);
+    padding:4px 2px;
+    flex:1;
+    min-width:120px;
+    color:var(--ink);
+  }
+  .add-item-row input:focus{outline:none; border-bottom-color:var(--ink);}
+  .add-item-row input[type="number"]{max-width:70px; flex:none;}
+  .add-item-row button{
+    font-family:'Kalam', cursive;
+    font-weight:700;
+    background:var(--ink);
+    color:var(--paper);
+    border:none;
+    border-radius:6px;
+    padding:6px 14px;
+    cursor:pointer;
+  }
+
+  /* Modal / sticky-note popup */
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(20,15,10,0.35);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    padding:20px;
+  }
+  .overlay.show{display:flex;}
+  .sticky{
+    background: var(--accent-yellow);
+    width:100%;
+    max-width:320px;
+    padding:22px 20px 20px;
+    border-radius:2px;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+    transform: rotate(-1.5deg);
+    position:relative;
+    font-family:'Patrick Hand', cursive;
+  }
+  .sticky::before{
+    content:"";
+    position:absolute;
+    top:-14px; left:50%;
+    transform:translateX(-50%);
+    width:26px;height:26px;
+    background: var(--margin-red);
+    border-radius:50%;
+    box-shadow: 0 3px 4px rgba(0,0,0,0.3);
+  }
+  .sticky h2{
+    font-family:'Kalam', cursive;
+    margin:6px 0 4px;
+    font-size:1.3rem;
+  }
+  .sticky .loc-label{
+    font-family:'Space Mono', monospace;
+    font-size:0.7rem;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+  .counter-block{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    margin:18px 0;
+  }
+  .counter-block button{
+    width:44px;height:44px;
+    border-radius:50%;
+    border:2px solid var(--ink);
+    background:var(--paper);
+    font-size:1.4rem;
+    font-family:'Space Mono', monospace;
+    cursor:pointer;
+  }
+  .counter-block .count-display{
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:1.8rem;
+    min-width:50px;
+    text-align:center;
+  }
+  .sticky-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+  }
+  .sticky-actions button{
+    font-family:'Kalam', cursive;
+    font-weight:700;
+    border:none;
+    border-radius:6px;
+    padding:7px 14px;
+    cursor:pointer;
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .register-form label{
+    display:block;
+    font-family:'Space Mono', monospace;
+    font-size:0.7rem;
+    color:var(--ink-soft);
+    margin-top:10px;
+    text-transform:uppercase;
+  }
+  .register-form input, .register-form select{
+    width:100%;
+    font-family:'Patrick Hand', cursive;
+    font-size:1.1rem;
+    padding:6px 4px;
+    background:transparent;
+    border:none;
+    border-bottom:2px dotted var(--ink-soft);
+    margin-top:2px;
+  }
+  .register-form input:focus, .register-form select:focus{outline:none;}
+
+  .tag-url-box{
+    margin-top:12px;
+    font-family:'Space Mono', monospace;
+    font-size:0.65rem;
+    background:rgba(0,0,0,0.06);
+    padding:8px;
+    border-radius:6px;
+    word-break:break-all;
+    cursor:pointer;
+  }
+  .tag-url-box .hint{
+    display:block;
+    font-family:'Patrick Hand', cursive;
+    font-size:0.85rem;
+    margin-bottom:4px;
+    color:var(--ink-soft);
+  }
+
+  @media (max-width: 520px){
+    .tabs{ margin-top:38px; }
+    .tab{ font-size:0.8rem; padding:8px 10px 8px 12px; }
+    .page{ padding:20px 14px 24px 40px; }
+    .page::before{ left:22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="notebook">
+  <div class="cover">
+    <h1>📓 Inventory Notebook</h1>
+    <p>Tap an NFC tag on any bin, shelf, or box to update its count</p>
+    <button id="exportCsvBtn" class="export-btn">⬇ Export CSV</button>
+  </div>
+
+  <div class="page-wrap">
+    <div class="tabs" id="tabs"></div>
+    <div class="page" id="page">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Adjust-count popup (known tag / manual item tap) -->
+<div class="overlay" id="adjustOverlay">
+  <div class="sticky">
+    <div class="loc-label" id="adjustLoc">LOCATION</div>
+    <h2 id="adjustName">Item</h2>
+    <div class="counter-block">
+      <button id="adjustMinus">−</button>
+      <div class="count-display" id="adjustCount">0</div>
+      <button id="adjustPlus">+</button>
+    </div>
+    <div class="sticky-actions">
+      <button id="adjustDone">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Register new tag popup (unknown tag scanned) -->
+<div class="overlay" id="registerOverlay">
+  <div class="sticky">
+    <div class="loc-label">New NFC Tag</div>
+    <h2>Name this item</h2>
+    <div class="register-form">
+      <label>Location</label>
+      <select id="regLocation"></select>
+      <label>Item name</label>
+      <input type="text" id="regName" placeholder="e.g. Eggs">
+      <label>Starting count</label>
+      <input type="number" id="regCount" value="1" min="0">
+    </div>
+    <div class="sticky-actions" style="margin-top:16px;">
+      <button id="regSave">Save & Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tag link popup (show URL to write to a physical tag) -->
+<div class="overlay" id="linkOverlay">
+  <div class="sticky">
+    <div class="loc-label">Write to NFC tag</div>
+    <h2 id="linkItemName">Item</h2>
+    <div class="tag-url-box" id="linkUrlBox">
+      <span class="hint">Tap to copy — paste into NFC Tools as a URL record</span>
+      <span id="linkUrlText"></span>
+    </div>
+    <div class="sticky-actions" style="margin-top:16px;">
+      <button id="linkDone">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'inventory-notebook-data-v1';
+  const TAB_COLORS = ['var(--tab-1)','var(--tab-2)','var(--tab-3)','var(--tab-4)','var(--tab-5)'];
+
+  function loadData(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ try{ return JSON.parse(raw); }catch(e){ /* fall through */ } }
+    // starter data
+    return {
+      locations: [
+        {id:'fridge', name:'🥚 Fridge'},
+        {id:'freezer', name:'🧊 Freezer'},
+        {id:'pantry', name:'🥫 Pantry'}
+      ],
+      items: [
+        {id:'item-egg', tagId:'egg01', locationId:'fridge', name:'Eggs', count:6},
+        {id:'item-meat', tagId:'meat01', locationId:'freezer', name:'Meat', count:2}
+      ],
+      activeLocation:'fridge'
+    };
+  }
+  function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+  function uid(prefix){ return prefix + '-' + Math.random().toString(36).slice(2,9); }
+
+  let data = loadData();
+
+  function renderTabs(){
+    const tabsEl = document.getElementById('tabs');
+    tabsEl.innerHTML = '';
+    data.locations.forEach((loc, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'tab' + (loc.id === data.activeLocation ? ' active' : '');
+      btn.style.background = TAB_COLORS[i % TAB_COLORS.length];
+      btn.textContent = loc.name;
+      btn.onclick = () => { data.activeLocation = loc.id; saveData(); render(); };
+      tabsEl.appendChild(btn);
+    });
+    const addBtn = document.createElement('button');
+    addBtn.className = 'tab tab-add';
+    addBtn.textContent = '+ new place';
+    addBtn.onclick = () => {
+      const name = prompt('Name this storage place (e.g. "Garage Shelf", "🧴 Bathroom Cabinet"):');
+      if(!name) return;
+      const id = uid('loc');
+      data.locations.push({id, name});
+      data.activeLocation = id;
+      saveData(); render();
+    };
+    tabsEl.appendChild(addBtn);
+  }
+
+  function renderPage(){
+    const page = document.getElementById('page');
+    const loc = data.locations.find(l => l.id === data.activeLocation) || data.locations[0];
+    if(!loc){ page.innerHTML = '<p class="empty-note">No places yet. Add one with the tab on the left.</p>'; return; }
+
+    const items = data.items.filter(it => it.locationId === loc.id);
+    let html = `<div class="location-title"><span>${loc.name}</span>`;
+    html += `<button class="del-loc" data-loc="${loc.id}">remove place</button></div>`;
+
+    if(items.length === 0){
+      html += `<p class="empty-note">Nothing logged here yet. Add an item below.</p>`;
+    } else {
+      items.forEach(it => {
+        html += `
+          <div class="item-row">
+            <div class="item-name">${it.name}</div>
+            <button class="item-tag-btn" data-showlink="${it.id}">tag link</button>
+            <div class="item-count" data-openadjust="${it.id}">${it.count}</div>
+            <div class="item-actions">
+              <button class="icon-btn" data-quickminus="${it.id}">−</button>
+              <button class="icon-btn" data-quickplus="${it.id}">+</button>
+              <button class="icon-btn" data-delitem="${it.id}">✕</button>
+            </div>
+          </div>`;
+      });
+    }
+
+    html += `
+      <div class="add-item-row">
+        <input type="text" id="newItemName" placeholder="New item name...">
+        <input type="number" id="newItemCount" value="1" min="0">
+        <button id="addItemBtn">Add</button>
+      </div>`;
+
+    page.innerHTML = html;
+
+    page.querySelectorAll('[data-openadjust]').forEach(el => {
+      el.onclick = () => openAdjust(el.dataset.openadjust);
+    });
+    page.querySelectorAll('[data-quickplus]').forEach(el => {
+      el.onclick = () => { changeCount(el.dataset.quickplus, 1); };
+    });
+    page.querySelectorAll('[data-quickminus]').forEach(el => {
+      el.onclick = () => { changeCount(el.dataset.quickminus, -1); };
+    });
+    page.querySelectorAll('[data-delitem]').forEach(el => {
+      el.onclick = () => {
+        if(confirm('Remove this item from the notebook?')){
+          data.items = data.items.filter(it => it.id !== el.dataset.delitem);
+          saveData(); render();
+        }
+      };
+    });
+    page.querySelectorAll('[data-showlink]').forEach(el => {
+      el.onclick = () => showLink(el.dataset.showlink);
+    });
+    const delLocBtn = page.querySelector('.del-loc');
+    if(delLocBtn){
+      delLocBtn.onclick = () => {
+        if(confirm('Remove this place and all its items?')){
+          data.items = data.items.filter(it => it.locationId !== loc.id);
+          data.locations = data.locations.filter(l => l.id !== loc.id);
+          data.activeLocation = data.locations[0] ? data.locations[0].id : null;
+          saveData(); render();
+        }
+      };
+    }
+    const addBtn = document.getElementById('addItemBtn');
+    if(addBtn){
+      addBtn.onclick = () => {
+        const nameEl = document.getElementById('newItemName');
+        const countEl = document.getElementById('newItemCount');
+        const name = nameEl.value.trim();
+        if(!name) return;
+        const count = parseInt(countEl.value, 10) || 0;
+        const id = uid('item');
+        const tagId = uid('tag');
+        data.items.push({id, tagId, locationId: loc.id, name, count});
+        saveData(); render();
+        showLink(id);
+      };
+    }
+  }
+
+  function render(){ renderTabs(); renderPage(); }
+
+  function changeCount(itemId, delta){
+    const it = data.items.find(i => i.id === itemId);
+    if(!it) return;
+    it.count = Math.max(0, it.count + delta);
+    saveData(); render();
+  }
+
+  // ---- Adjust popup (tap a count, or scan a known tag) ----
+  let adjustingId = null;
+  function openAdjust(itemId){
+    const it = data.items.find(i => i.id === itemId);
+    if(!it) return;
+    adjustingId = itemId;
+    const loc = data.locations.find(l => l.id === it.locationId);
+    document.getElementById('adjustLoc').textContent = loc ? loc.name : '';
+    document.getElementById('adjustName').textContent = it.name;
+    document.getElementById('adjustCount').textContent = it.count;
+    document.getElementById('adjustOverlay').classList.add('show');
+  }
+  document.getElementById('adjustPlus').onclick = () => {
+    const it = data.items.find(i => i.id === adjustingId);
+    if(!it) return;
+    it.count += 1;
+    document.getElementById('adjustCount').textContent = it.count;
+    saveData();
+  };
+  document.getElementById('adjustMinus').onclick = () => {
+    const it = data.items.find(i => i.id === adjustingId);
+    if(!it) return;
+    it.count = Math.max(0, it.count - 1);
+    document.getElementById('adjustCount').textContent = it.count;
+    saveData();
+  };
+  document.getElementById('adjustDone').onclick = () => {
+    document.getElementById('adjustOverlay').classList.remove('show');
+    // clean the ?tag= param from the URL so a refresh doesn't reopen it
+    if(window.history && window.history.replaceState){
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+    render();
+  };
+
+  // ---- Register popup (scan an unknown tag) ----
+  let pendingTagId = null;
+  function openRegister(tagId){
+    pendingTagId = tagId;
+    const sel = document.getElementById('regLocation');
+    sel.innerHTML = '';
+    data.locations.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc.id; opt.textContent = loc.name;
+      sel.appendChild(opt);
+    });
+    const newOpt = document.createElement('option');
+    newOpt.value = '__new__'; newOpt.textContent = '+ new place...';
+    sel.appendChild(newOpt);
+    document.getElementById('regName').value = '';
+    document.getElementById('regCount').value = 1;
+    document.getElementById('registerOverlay').classList.add('show');
+  }
+  document.getElementById('regSave').onclick = () => {
+    let locId = document.getElementById('regLocation').value;
+    if(locId === '__new__'){
+      const name = prompt('Name this storage place:');
+      if(!name) return;
+      locId = uid('loc');
+      data.locations.push({id:locId, name});
+    }
+    const name = document.getElementById('regName').value.trim();
+    if(!name){ alert('Give the item a name first.'); return; }
+    const count = parseInt(document.getElementById('regCount').value, 10) || 0;
+    const id = uid('item');
+    data.items.push({id, tagId: pendingTagId, locationId: locId, name, count});
+    data.activeLocation = locId;
+    saveData();
+    document.getElementById('registerOverlay').classList.remove('show');
+    if(window.history && window.history.replaceState){
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+    render();
+  };
+
+  // ---- Tag link popup (show URL to write onto a physical tag) ----
+  function showLink(itemId){
+    const it = data.items.find(i => i.id === itemId);
+    if(!it) return;
+    const url = window.location.origin + window.location.pathname + '?tag=' + it.tagId;
+    document.getElementById('linkItemName').textContent = it.name;
+    document.getElementById('linkUrlText').textContent = url;
+    document.getElementById('linkUrlBox').onclick = () => {
+      navigator.clipboard && navigator.clipboard.writeText(url);
+      document.getElementById('linkUrlBox').querySelector('.hint').textContent = 'Copied!';
+    };
+    document.getElementById('linkOverlay').classList.add('show');
+  }
+  document.getElementById('linkDone').onclick = () => {
+    document.getElementById('linkOverlay').classList.remove('show');
+  };
+
+  // ---- Export all current data to a dated CSV file ----
+  function todayDateString(){
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  function csvEscape(val){
+    const s = String(val);
+    if(/[",\n]/.test(s)){ return '"' + s.replace(/"/g, '""') + '"'; }
+    return s;
+  }
+  function exportCsv(){
+    const rows = [['Location', 'Item', 'Count', 'Tag ID']];
+    data.items.forEach(it => {
+      const loc = data.locations.find(l => l.id === it.locationId);
+      rows.push([loc ? loc.name : '(unknown place)', it.name, it.count, it.tagId]);
+    });
+    const csvContent = rows.map(r => r.map(csvEscape).join(',')).join('\n');
+    const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `inventory-${todayDateString()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  document.getElementById('exportCsvBtn').onclick = exportCsv;
+
+  // ---- Entry point: check URL for ?tag= on load ----
+  function checkTagParam(){
+    const params = new URLSearchParams(window.location.search);
+    const tagId = params.get('tag');
+    if(!tagId) return;
+    const it = data.items.find(i => i.tagId === tagId);
+    if(it){
+      data.activeLocation = it.locationId;
+      saveData();
+      render();
+      openAdjust(it.id);
+    } else {
+      render();
+      openRegister(tagId);
+    }
+  }
+
+  render();
+  checkTagParam();
+</script>
+
+</body>
+</html>
