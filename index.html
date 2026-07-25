@@ -22,6 +22,16 @@
     --tab-5:#8a6a9e;
     --shadow: 0 6px 16px rgba(0,0,0,0.18);
   }
+  [data-theme="dark"]{
+    --paper:#2a2621;
+    --paper-dark:#1e1b17;
+    --rule:rgba(140,165,200,0.22);
+    --margin-red:#e0796a;
+    --ink:#eae3d3;
+    --ink-soft:#a89d86;
+    --accent-yellow:#caa53d;
+    --shadow: 0 6px 18px rgba(0,0,0,0.55);
+  }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;height:100%;}
   body{
@@ -46,7 +56,27 @@
   .cover{
     text-align:center;
     margin-bottom:18px;
+    position:relative;
   }
+  .settings-gear-btn{
+    position:absolute;
+    top:0;
+    right:6px;
+    z-index:5;
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:2px solid var(--ink);
+    border-radius:50%;
+    color:var(--ink);
+    cursor:pointer;
+    transition:transform .3s ease, background .15s ease;
+  }
+  .settings-gear-btn svg{ width:19px; height:19px; stroke:currentColor; }
+  .settings-gear-btn:hover{ background:var(--ink); color:var(--paper); transform:rotate(35deg); }
   .cover h1{
     font-family:'Kalam', cursive;
     font-weight:700;
@@ -385,6 +415,12 @@
   .overlay.show{display:flex;}
   .sticky{
     background: var(--accent-yellow);
+    /* Sticky notes keep their own fixed, always-readable ink/paper colors —
+       like a real paper note, they shouldn't flip to light text in dark mode. */
+    --ink: #2b2b2b;
+    --ink-soft: #5b5344;
+    --paper: #faf3df;
+    color: var(--ink);
     width:100%;
     max-width:320px;
     padding:22px 20px 20px;
@@ -404,6 +440,24 @@
     border-radius:50%;
     box-shadow: 0 3px 4px rgba(0,0,0,0.3);
   }
+  .sticky-close-x{
+    position:absolute;
+    top:10px;
+    right:10px;
+    width:26px;
+    height:26px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:none;
+    color:var(--ink-soft);
+    cursor:pointer;
+    opacity:0.7;
+  }
+  .sticky-close-x svg{ width:16px; height:16px; stroke:currentColor; }
+  .sticky-close-x:hover{ opacity:1; color:var(--ink); }
   .sticky h2{
     font-family:'Kalam', cursive;
     margin:6px 0 4px;
@@ -457,6 +511,67 @@
     justify-content:flex-end;
     gap:8px;
   }
+
+  .settings-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin:14px 0;
+    font-size:1.05rem;
+  }
+  .settings-row-io{
+    justify-content:space-around;
+    gap:10px;
+  }
+  .settings-io-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    font-size:0.8rem;
+    color:var(--ink-soft);
+  }
+  .settings-icon-btn{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    border:2px solid var(--ink);
+    background:var(--paper);
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+  .settings-icon-btn:hover{ background:var(--ink); color:var(--paper); }
+  .settings-icon-btn svg{ width:22px; height:22px; stroke:currentColor; }
+  .settings-note{
+    font-size:0.82rem;
+    color:var(--ink-soft);
+    line-height:1.35;
+    margin:10px 0 0;
+  }
+  .theme-toggle{
+    width:52px;
+    height:28px;
+    border-radius:16px;
+    border:2px solid var(--ink);
+    background:var(--paper);
+    position:relative;
+    cursor:pointer;
+    padding:0;
+  }
+  .theme-toggle-knob{
+    position:absolute;
+    top:2px;
+    left:2px;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--ink);
+    transition:transform .2s ease;
+  }
+  .theme-toggle.on .theme-toggle-knob{ transform:translateX(24px); }
   .sticky-actions button{
     font-family:'Kalam', cursive;
     font-weight:700;
@@ -604,6 +719,10 @@
     color:var(--ink-soft) !important;
     border:1.5px solid var(--ink-soft) !important;
   }
+  .danger-btn{
+    background: var(--margin-red) !important;
+    color: #fff !important;
+  }
 
   .tag-url-box{
     margin-top:12px;
@@ -696,9 +815,9 @@
 
 <div class="notebook">
   <div class="cover">
+    <button id="settingsBtn" class="settings-gear-btn" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.8 1.8 0 0 0 .36 1.98l.06.06a2.15 2.15 0 1 1-3.04 3.04l-.06-.06a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.1 1.65v.17a2.15 2.15 0 1 1-4.3 0v-.09a1.8 1.8 0 0 0-1.18-1.65 1.8 1.8 0 0 0-1.98.36l-.06.06a2.15 2.15 0 1 1-3.04-3.04l.06-.06a1.8 1.8 0 0 0 .36-1.98 1.8 1.8 0 0 0-1.65-1.1H2.7a2.15 2.15 0 1 1 0-4.3h.09a1.8 1.8 0 0 0 1.65-1.18 1.8 1.8 0 0 0-.36-1.98l-.06-.06a2.15 2.15 0 1 1 3.04-3.04l.06.06a1.8 1.8 0 0 0 1.98.36h.09a1.8 1.8 0 0 0 1.1-1.65V2.7a2.15 2.15 0 1 1 4.3 0v.09a1.8 1.8 0 0 0 1.1 1.65 1.8 1.8 0 0 0 1.98-.36l.06-.06a2.15 2.15 0 1 1 3.04 3.04l-.06.06a1.8 1.8 0 0 0-.36 1.98v.09a1.8 1.8 0 0 0 1.65 1.1h.17a2.15 2.15 0 1 1 0 4.3h-.09a1.8 1.8 0 0 0-1.65 1.1z"/></svg></button>
     <h1>📓 Inventory Notebook</h1>
     <p>Tap an NFC tag on any bin, shelf, or box to update its count</p>
-    <button id="exportCsvBtn" class="export-btn">⬇ Export CSV</button>
   </div>
 
   <div class="page-wrap">
@@ -779,6 +898,47 @@
   </div>
 </div>
 
+<div class="overlay" id="confirmOverlay">
+  <div class="sticky">
+    <div class="loc-label">Are you sure?</div>
+    <h2 id="confirmTitle">Remove this?</h2>
+    <p id="confirmMessage" class="settings-note"></p>
+    <div class="sticky-actions" style="margin-top:16px;">
+      <button id="confirmCancel" class="secondary-btn">Cancel</button>
+      <button id="confirmOk" class="danger-btn">Remove</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="settingsOverlay">
+  <div class="sticky">
+    <button id="settingsDone" class="sticky-close-x" title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="loc-label">Settings</div>
+    <h2>Notebook Settings</h2>
+
+    <div class="settings-row">
+      <span>Dark theme</span>
+      <button id="themeToggle" class="theme-toggle" title="Toggle dark theme" aria-label="Toggle dark theme">
+        <span class="theme-toggle-knob"></span>
+      </button>
+    </div>
+
+    <div class="settings-row settings-row-io">
+      <div class="settings-io-item">
+        <button id="loadLayoutBtn" class="settings-icon-btn" title="Load place layout from CSV" aria-label="Load layout"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></button>
+        <span>Load layout</span>
+      </div>
+      <div class="settings-io-item">
+        <button id="exportAllBtn" class="settings-icon-btn" title="Export all data as CSV" aria-label="Export all data"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="M7 11l5 5 5-5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></button>
+        <span>Export all</span>
+      </div>
+    </div>
+    <p class="settings-note">Load reads only the place layout (names, icons, colors, order) from a CSV — it won't touch your item counts. Export saves everything (places + items) as a CSV, handy for keeping a backup in GitHub.</p>
+    <input type="file" id="loadLayoutFile" accept=".csv,text/csv" style="display:none;">
+  </div>
+</div>
+
+
 <script>
   const STORAGE_KEY = 'inventory-notebook-data-v1';
   const TAB_COLORS = ['var(--tab-1)','var(--tab-2)','var(--tab-3)','var(--tab-4)','var(--tab-5)'];
@@ -807,6 +967,21 @@
   }
   function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
   function uid(prefix){ return prefix + '-' + Math.random().toString(36).slice(2,9); }
+
+  // Reusable styled confirm popup (replaces window.confirm()). Call with a
+  // title, message, and a callback that runs only if the person confirms.
+  function showConfirm(title, message, confirmLabel, onConfirm){
+    const overlay = document.getElementById('confirmOverlay');
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmMessage').textContent = message;
+    const okBtn = document.getElementById('confirmOk');
+    okBtn.textContent = confirmLabel || 'Remove';
+    overlay.classList.add('show');
+    const cancelBtn = document.getElementById('confirmCancel');
+    const close = () => overlay.classList.remove('show');
+    okBtn.onclick = () => { close(); onConfirm(); };
+    cancelBtn.onclick = close;
+  }
 
   let data = loadData();
 
@@ -871,10 +1046,15 @@
   // text label so it doesn't compete for space in the row.
   const LINK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1.5 1.5"/><path d="M14 10a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1.5-1.5"/></svg>';
 
-  // Gear icon for "edit place" and trash-bin icon for "remove place",
-  // matching the app's stroke-based SVG icon style.
+  // Gear icon for Settings, pencil for "edit place", and trash-bin icon
+  // for "remove place" — all matching the app's stroke-based SVG style.
   const GEAR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.8 1.8 0 0 0 .36 1.98l.06.06a2.15 2.15 0 1 1-3.04 3.04l-.06-.06a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.1 1.65v.17a2.15 2.15 0 1 1-4.3 0v-.09a1.8 1.8 0 0 0-1.18-1.65 1.8 1.8 0 0 0-1.98.36l-.06.06a2.15 2.15 0 1 1-3.04-3.04l.06-.06a1.8 1.8 0 0 0 .36-1.98 1.8 1.8 0 0 0-1.65-1.1H2.7a2.15 2.15 0 1 1 0-4.3h.09a1.8 1.8 0 0 0 1.65-1.18 1.8 1.8 0 0 0-.36-1.98l-.06-.06a2.15 2.15 0 1 1 3.04-3.04l.06.06a1.8 1.8 0 0 0 1.98.36h.09a1.8 1.8 0 0 0 1.1-1.65V2.7a2.15 2.15 0 1 1 4.3 0v.09a1.8 1.8 0 0 0 1.1 1.65 1.8 1.8 0 0 0 1.98-.36l.06-.06a2.15 2.15 0 1 1 3.04 3.04l-.06.06a1.8 1.8 0 0 0-.36 1.98v.09a1.8 1.8 0 0 0 1.65 1.1h.17a2.15 2.15 0 1 1 0 4.3h-.09a1.8 1.8 0 0 0-1.65 1.1z"/></svg>';
   const TRASH_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V7"/><path d="M6 7l1 13a1.5 1.5 0 0 0 1.5 1.4h7a1.5 1.5 0 0 0 1.5-1.4L18 7"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>';
+  const PENCIL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/><path d="M14.5 5.5l3 3"/></svg>';
+  const UPLOAD_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>';
+  const DOWNLOAD_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="M7 11l5 5 5-5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>';
+  const MOON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg>';
+  const SUN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg>';
 
   function itemRowHTML(it){
     const countClass = it.count === 0 ? ' zero' : '';
@@ -951,7 +1131,7 @@
 
     const titleLabel = loc.icon ? `${locIconHTML(loc)}<span>${loc.name}</span>` : `<span>${loc.name}</span>`;
     let html = `<div class="location-title"><span class="title-main">${titleLabel}</span>`;
-    html += `<div class="title-actions"><button class="edit-loc" data-loc="${loc.id}" title="Edit place">${GEAR_SVG}</button><button class="del-loc" data-loc="${loc.id}" title="Remove place">${TRASH_SVG}</button></div></div>`;
+    html += `<div class="title-actions"><button class="edit-loc" data-loc="${loc.id}" title="Edit place">${PENCIL_SVG}</button><button class="del-loc" data-loc="${loc.id}" title="Remove place">${TRASH_SVG}</button></div></div>`;
 
     html += `
       <div class="item-controls">
@@ -993,12 +1173,17 @@
     const delLocBtn = page.querySelector('.del-loc');
     if(delLocBtn){
       delLocBtn.onclick = () => {
-        if(confirm('Remove this place and all its items?')){
-          data.items = data.items.filter(it => it.locationId !== loc.id);
-          data.locations = data.locations.filter(l => l.id !== loc.id);
-          data.activeLocation = data.locations[0] ? data.locations[0].id : null;
-          saveData(); render();
-        }
+        showConfirm(
+          'Remove this place?',
+          `"${loc.name}" and all its items will be removed from the notebook. This can't be undone.`,
+          'Remove place',
+          () => {
+            data.items = data.items.filter(it => it.locationId !== loc.id);
+            data.locations = data.locations.filter(l => l.id !== loc.id);
+            data.activeLocation = data.locations[0] ? data.locations[0].id : null;
+            saveData(); render();
+          }
+        );
       };
     }
     const addBtn = document.getElementById('addItemBtn');
@@ -1391,7 +1576,7 @@
     document.getElementById('linkOverlay').classList.remove('show');
   };
 
-  // ---- Export all current data to a dated CSV file ----
+  // ---- CSV helpers, full data export, and layout-only load ----
   function todayDateString(){
     const d = new Date();
     const yyyy = d.getFullYear();
@@ -1400,28 +1585,156 @@
     return `${yyyy}-${mm}-${dd}`;
   }
   function csvEscape(val){
-    const s = String(val);
+    const s = String(val == null ? '' : val);
     if(/[",\n]/.test(s)){ return '"' + s.replace(/"/g, '""') + '"'; }
     return s;
   }
-  function exportCsv(){
-    const rows = [['Location', 'Item', 'Count', 'Tag ID']];
-    data.items.forEach(it => {
-      const loc = data.locations.find(l => l.id === it.locationId);
-      rows.push([loc ? loc.name : '(unknown place)', it.name, it.count, it.tagId]);
-    });
+  function downloadCsv(rows, filename){
     const csvContent = rows.map(r => r.map(csvEscape).join(',')).join('\n');
     const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `inventory-${todayDateString()}.csv`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
-  document.getElementById('exportCsvBtn').onclick = exportCsv;
+  // Small CSV parser that handles quoted fields (with escaped "" and
+  // embedded commas/newlines) — needed since values like item names or
+  // icon SVG references may contain commas.
+  function parseCsv(text){
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+    for(let i = 0; i < text.length; i++){
+      const c = text[i];
+      if(inQuotes){
+        if(c === '"'){
+          if(text[i + 1] === '"'){ field += '"'; i++; }
+          else { inQuotes = false; }
+        } else { field += c; }
+      } else if(c === '"'){
+        inQuotes = true;
+      } else if(c === ','){
+        row.push(field); field = '';
+      } else if(c === '\n' || c === '\r'){
+        if(c === '\r' && text[i + 1] === '\n') i++;
+        row.push(field); field = '';
+        rows.push(row); row = [];
+      } else {
+        field += c;
+      }
+    }
+    if(field.length || row.length){ row.push(field); rows.push(row); }
+    return rows.filter(r => !(r.length === 1 && r[0].trim() === ''));
+  }
+
+  // Export EVERYTHING (places + items, with icons/colors/counts/tag IDs)
+  // as one flat CSV — a full backup, good for committing to a GitHub repo.
+  function exportAllData(){
+    const rows = [['Type', 'ID', 'Name', 'Icon', 'Color', 'LocationID', 'Count', 'TagID']];
+    data.locations.forEach(loc => {
+      rows.push(['place', loc.id, loc.name, loc.icon || '', loc.color || '', '', '', '']);
+    });
+    data.items.forEach(it => {
+      rows.push(['item', it.id, it.name, '', '', it.locationId, it.count, it.tagId]);
+    });
+    downloadCsv(rows, `inventory-full-${todayDateString()}.csv`);
+  }
+
+  // Load ONLY the place layout (name/icon/color/order) from a CSV — used
+  // to carry your shelf/fridge/cabinet setup to a fresh notebook without
+  // bringing along old item counts. Understands both this app's full
+  // export (Type column) and the older items-only export (Location column).
+  function loadLayoutFromCsv(text){
+    const rows = parseCsv(text);
+    if(rows.length === 0){ alert('That CSV looks empty.'); return; }
+    const header = rows[0].map(h => h.trim().toLowerCase());
+    const newLocations = [];
+
+    if(header.includes('type')){
+      const typeIdx = header.indexOf('type');
+      const nameIdx = header.indexOf('name');
+      const iconIdx = header.indexOf('icon');
+      const colorIdx = header.indexOf('color');
+      rows.slice(1).forEach(r => {
+        if((r[typeIdx] || '').trim().toLowerCase() !== 'place') return;
+        const name = (r[nameIdx] || '').trim();
+        if(!name) return;
+        newLocations.push({
+          id: uid('loc'),
+          name,
+          icon: (iconIdx > -1 ? (r[iconIdx] || '').trim() : '') || undefined,
+          color: (colorIdx > -1 ? (r[colorIdx] || '').trim() : '') || undefined
+        });
+      });
+    } else if(header.includes('location')){
+      const locIdx = header.indexOf('location');
+      const seen = new Set();
+      rows.slice(1).forEach(r => {
+        const name = (r[locIdx] || '').trim();
+        if(!name || seen.has(name)) return;
+        seen.add(name);
+        newLocations.push({id: uid('loc'), name});
+      });
+    } else {
+      alert('This doesn\'t look like an inventory CSV — no "Type" or "Location" column found.');
+      return;
+    }
+
+    if(newLocations.length === 0){
+      alert('No places were found in that file.');
+      return;
+    }
+    if(!confirm(`Load ${newLocations.length} place(s) from this file? This replaces your current place layout and clears existing items — a layout file doesn't carry counts.`)) return;
+
+    data.locations = newLocations;
+    data.items = [];
+    data.activeLocation = newLocations[0].id;
+    saveData();
+    render();
+    document.getElementById('settingsOverlay').classList.remove('show');
+  }
+
+  // ---- Settings panel: dark theme + load/export wiring ----
+  const THEME_KEY = 'inventory-notebook-theme';
+  function applyTheme(theme){
+    const toggle = document.getElementById('themeToggle');
+    if(theme === 'dark'){
+      document.documentElement.setAttribute('data-theme', 'dark');
+      toggle.classList.add('on');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      toggle.classList.remove('on');
+    }
+  }
+  let currentTheme = localStorage.getItem(THEME_KEY) || 'light';
+  applyTheme(currentTheme);
+
+  document.getElementById('settingsBtn').onclick = () => {
+    document.getElementById('settingsOverlay').classList.add('show');
+  };
+  document.getElementById('settingsDone').onclick = () => {
+    document.getElementById('settingsOverlay').classList.remove('show');
+  };
+  document.getElementById('themeToggle').onclick = () => {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem(THEME_KEY, currentTheme);
+    applyTheme(currentTheme);
+  };
+  document.getElementById('exportAllBtn').onclick = exportAllData;
+  document.getElementById('loadLayoutBtn').onclick = () => {
+    document.getElementById('loadLayoutFile').click();
+  };
+  document.getElementById('loadLayoutFile').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => loadLayoutFromCsv(String(reader.result));
+    reader.readAsText(file);
+    e.target.value = '';
+  });
 
   // ---- Swipe left/right between places (mobile) ----
   function switchLocation(direction){
