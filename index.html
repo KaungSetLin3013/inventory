@@ -84,27 +84,36 @@
   .tabs{
     display:flex;
     flex-direction:column;
-    gap:10px;
+    align-items:flex-end; /* anchor every tab's inward (right) edge at the
+                              same spot, so width differences only change
+                              how far each one extends outward (left) */
+    gap:8px;
     margin-top:46px;
-    margin-right:-2px;
-    z-index:2;
+    margin-right:-14px; /* only the pointed tip tucks under the page —
+                            the rest of each tab's rectangle stays visible */
+    z-index:1;
   }
   .tab{
     font-family:'Kalam', cursive;
     font-weight:700;
     font-size:0.95rem;
     color:#fff;
-    padding:10px 14px 10px 16px;
-    border-radius:8px 0 0 8px;
+    width:44px;
+    height:36px;
+    padding:0 22px 0 16px;
     cursor:pointer;
-    box-shadow: -2px 3px 6px rgba(0,0,0,0.15);
-    opacity:0.82;
-    transform: translateX(6px);
-    transition: transform .15s ease, opacity .15s ease;
-    white-space:nowrap;
+    box-shadow: -2px 3px 6px rgba(0,0,0,0.18);
     border:none;
+    white-space:nowrap;
     text-align:left;
     position:relative;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    /* Pointed ribbon shape: a triangular tip on the inward (right) end,
+       pointing toward the page; flat rectangle on the outward (left) end. */
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);
+    transition: width .25s ease, transform .25s ease, box-shadow .2s ease;
   }
   .tab::after{
     content:'';
@@ -117,20 +126,36 @@
     clip-path: polygon(100% 100%, 0 100%, 100% 0);
     filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.25));
     pointer-events:none;
+    display:none; /* the page-corner fold only suits the mobile icon tabs */
   }
-  .tab:hover{ transform: translateX(0px); opacity:1;}
-  .tab.active{ transform: translateX(0px); opacity:1; }
+  .tab:hover{ transform: translateX(-14px); box-shadow: -3px 4px 8px rgba(0,0,0,0.22); }
+  .tab.active{
+    width:200px;
+    transform: translateX(-14px); /* pulled fully out from under the page */
+    z-index:3;
+    box-shadow: -3px 5px 10px rgba(0,0,0,0.28);
+  }
+  .tab.active:hover{ transform: translateX(-14px); }
   .tab-add{
     background:transparent !important;
     color:var(--ink-soft) !important;
-    box-shadow:none;
+    box-shadow:none !important;
     border:2px dashed var(--ink-soft) !important;
-    opacity:0.6;
+    border-radius:8px;
+    opacity:0.7;
+    width:150px;
+    justify-content:center;
+    padding:0 14px;
+    clip-path:none;
+    transform: translateX(-14px); /* the add button always stays fully out */
+    z-index:3;
   }
+  .tab-add:hover{ opacity:1; transform: translateX(-30px); }
   .tab-add::after{ display:none; }
   .tab-icon{ display:none; }
   .tab-icon svg{ width:1.1rem; height:1.1rem; stroke:currentColor; vertical-align:-0.15em; }
-  .tab-label{ display:inline; }
+  .tab-label{ display:inline; opacity:0; transition: opacity .1s ease; }
+  .tab.active .tab-label, .tab-add .tab-label{ opacity:1; }
   .tab-label-icon{ display:inline-flex; vertical-align:-0.2em; }
   .tab-label-icon svg{ width:1.05rem; height:1.05rem; stroke:currentColor; }
 
@@ -146,6 +171,7 @@
     box-shadow: var(--shadow);
     padding: 26px 22px 30px 56px;
     position:relative;
+    z-index:2;
     min-height:420px;
   }
   .page::before{
@@ -240,16 +266,9 @@
   }
   .icon-btn:hover{opacity:1; background:rgba(0,0,0,0.05);}
   .item-tag-btn{
-    font-family:'Space Mono', monospace;
-    font-size:0.65rem;
-    color:var(--ink-soft);
-    background:none;
-    border:none;
-    cursor:pointer;
-    text-decoration:underline;
-    opacity:0.65;
-    padding:0;
+    flex-shrink:0;
   }
+  .item-tag-btn svg{ width:13px; height:13px; stroke:currentColor; }
 
   .empty-note{
     font-size:1.05rem;
@@ -379,6 +398,19 @@
     margin:6px 0 4px;
     font-size:1.3rem;
   }
+  .adjust-name-input{
+    font-family:'Kalam', cursive;
+    font-weight:700;
+    font-size:1.3rem;
+    color:var(--ink);
+    margin:6px 0 4px;
+    width:100%;
+    background:transparent;
+    border:none;
+    border-bottom:2px dashed var(--ink-soft);
+    padding:0 0 3px;
+  }
+  .adjust-name-input:focus{ outline:none; border-bottom-color:var(--ink); }
   .sticky .loc-label{
     font-family:'Space Mono', monospace;
     font-size:0.7rem;
@@ -593,6 +625,7 @@
     .tabs{
       flex-direction:row;
       flex-wrap:wrap;
+      align-items:flex-start;
       margin-top:0;
       margin-right:0;
       margin-bottom:10px;
@@ -604,6 +637,7 @@
       height:44px;
       padding:0;
       border-radius:10px;
+      clip-path:none;
       transform:none !important;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       display:flex;
@@ -611,7 +645,12 @@
       justify-content:center;
     }
     .tab:hover, .tab.active{ transform:none !important; }
+    .tab.active, .tab-add{
+      width:44px;
+      z-index:auto;
+    }
     .tab::after{
+      display:block;
       left:auto;
       right:0;
       bottom:0;
@@ -636,20 +675,20 @@
     .page{ padding:18px 14px 24px 34px; border-radius:0 10px 10px 10px; }
     .page::before{ left:20px; }
 
-    /* Let each inventory row wrap onto two lines: name on its own
-       line, count + actions together below, both with roomier
-       touch targets. */
+    /* Keep name, count, and actions all on one line on mobile —
+       the name truncates with an ellipsis (same as desktop) rather
+       than wrapping onto its own row. */
     .item-row{
-      flex-wrap:wrap;
-      row-gap:8px;
-      padding:10px 0;
+      flex-wrap:nowrap;
+      padding:8px 0;
       border-bottom:1px solid var(--rule);
+      gap:6px;
     }
-    .item-name{ flex-basis:100%; white-space:normal; font-size:1.1rem; }
-    .item-tag-btn{ order:3; }
-    .item-count{ order:1; font-size:1.05rem; padding:4px 12px; }
-    .item-actions{ order:2; margin-left:auto; gap:6px; }
-    .icon-btn{ width:34px; height:34px; font-size:1.05rem; }
+    .item-name{ font-size:1rem; }
+    .item-count{ font-size:0.95rem; padding:3px 9px; }
+    .item-actions{ gap:3px; }
+    .icon-btn, .item-tag-btn{ width:30px; height:30px; font-size:0.95rem; }
+    .item-tag-btn svg{ width:14px; height:14px; }
 
     .add-item-row input{ font-size:1rem; }
     .add-item-row input[type="number"]{ max-width:64px; }
@@ -681,7 +720,7 @@
 <div class="overlay" id="adjustOverlay">
   <div class="sticky">
     <div class="loc-label" id="adjustLoc">LOCATION</div>
-    <h2 id="adjustName">Item</h2>
+    <input type="text" id="adjustName" class="adjust-name-input">
     <div class="counter-block">
       <button id="adjustMinus">−</button>
       <div class="count-display" id="adjustCount">0</div>
@@ -835,12 +874,16 @@
   let itemSortMode = localStorage.getItem(SORT_MODE_KEY) || 'alpha';
   function saveSortMode(){ localStorage.setItem(SORT_MODE_KEY, itemSortMode); }
 
+  // Small link icon for the "write to NFC tag" button — replaces the old
+  // text label so it doesn't compete for space in the row.
+  const LINK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1.5 1.5"/><path d="M14 10a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1.5-1.5"/></svg>';
+
   function itemRowHTML(it){
     const countClass = it.count === 0 ? ' zero' : '';
     return `
       <div class="item-row">
         <div class="item-name">${it.name}</div>
-        <button class="item-tag-btn" data-showlink="${it.id}">tag link</button>
+        <button class="icon-btn item-tag-btn" data-showlink="${it.id}" title="Write to NFC tag">${LINK_SVG}</button>
         <div class="item-count${countClass}" data-openadjust="${it.id}">${it.count}</div>
         <div class="item-actions">
           <button class="icon-btn" data-quickminus="${it.id}">−</button>
@@ -994,7 +1037,7 @@
     adjustingId = itemId;
     const loc = data.locations.find(l => l.id === it.locationId);
     document.getElementById('adjustLoc').textContent = loc ? loc.name : '';
-    document.getElementById('adjustName').textContent = it.name;
+    document.getElementById('adjustName').value = it.name;
     document.getElementById('adjustCount').textContent = it.count;
     document.getElementById('adjustOverlay').classList.add('show');
   }
@@ -1012,7 +1055,16 @@
     document.getElementById('adjustCount').textContent = it.count;
     saveData();
   };
+  document.getElementById('adjustName').addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('adjustDone').click(); }
+  });
   document.getElementById('adjustDone').onclick = () => {
+    const it = data.items.find(i => i.id === adjustingId);
+    if(it){
+      const newName = document.getElementById('adjustName').value.trim();
+      if(newName) it.name = newName;
+      saveData();
+    }
     document.getElementById('adjustOverlay').classList.remove('show');
     // clean the ?tag= param from the URL so a refresh doesn't reopen it
     if(window.history && window.history.replaceState){
