@@ -260,6 +260,7 @@
     justify-content:space-between;
     padding:5px 0;
     gap:10px;
+    position:relative;
   }
   .item-name{
     font-size:1.15rem;
@@ -299,10 +300,19 @@
     opacity:0.75;
   }
   .icon-btn:hover{opacity:1; background:rgba(0,0,0,0.05);}
+  .icon-btn svg{ width:15px; height:15px; stroke:currentColor; }
   .item-tag-btn{
     flex-shrink:0;
   }
   .item-tag-btn svg{ width:13px; height:13px; stroke:currentColor; }
+  .item-icon-mini{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    font-size:1.05rem;
+  }
+  .item-icon-mini svg{ width:17px; height:17px; stroke:currentColor; }
 
   .empty-note{
     font-size:1.05rem;
@@ -354,10 +364,14 @@
     font-size:0.7rem;
     letter-spacing:0.05em;
     color:var(--ink-soft);
-    margin:10px 0 2px;
     opacity:0.8;
+    position:absolute;
+    left:-27px; /* pulls it out of the text column so it sits on the red
+                   margin rule, level with the first item of its group */
+    top:50%;
+    transform:translateY(-50%);
+    white-space:nowrap;
   }
-  .letter-group-header:first-child{ margin-top:0; }
 
   .item-count.zero{
     background:transparent;
@@ -384,6 +398,17 @@
   }
   .add-item-row input:focus{outline:none; border-bottom-color:var(--ink);}
   .add-item-row input[type="number"]{max-width:70px; flex:none;}
+  .add-item-row .icon-btn{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:transparent;
+    color:var(--ink);
+    border:1.5px solid var(--ink);
+    opacity:0.75;
+  }
+  .add-item-row .icon-btn svg{ width:16px; height:16px; }
+  .add-item-row .icon-btn:hover{ opacity:1; background:rgba(0,0,0,0.05); }
   .add-item-row button{
     font-family:'Kalam', cursive;
     font-weight:700;
@@ -519,6 +544,38 @@
     margin:14px 0;
     font-size:1.05rem;
   }
+  .settings-row-block{
+    display:block;
+  }
+  .icon-pick-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:6px;
+  }
+  .icon-pick-row .icon-btn{
+    width:34px;
+    height:34px;
+    flex-shrink:0;
+  }
+  .icon-pick-row .icon-btn svg{ width:18px; height:18px; }
+  .icon-pick-hint{
+    font-size:0.85rem;
+    color:var(--ink-soft);
+  }
+  .adjust-name-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .adjust-name-row .icon-btn{
+    width:34px;
+    height:34px;
+    flex-shrink:0;
+    margin-top:2px;
+  }
+  .adjust-name-row .icon-btn svg{ width:18px; height:18px; }
+  .adjust-name-row .adjust-name-input{ flex:1; }
   .settings-row-io{
     justify-content:space-around;
     gap:10px;
@@ -603,6 +660,38 @@
   }
   .register-form input:focus, .register-form select:focus{outline:none;}
   .register-form input.input-error{ border-bottom-color:var(--margin-red); }
+  .register-form textarea{
+    width:100%;
+    font-family:'Space Mono', monospace;
+    font-size:0.75rem;
+    padding:8px;
+    background:rgba(0,0,0,0.05);
+    border:1.5px solid var(--ink-soft);
+    border-radius:8px;
+    margin-top:4px;
+    resize:vertical;
+    color:var(--ink);
+  }
+  .register-form textarea:focus{ outline:none; border-color:var(--ink); }
+  .register-form textarea.input-error{ border-color:var(--margin-red); }
+  .icon-upload-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:4px;
+  }
+  .icon-preview-box{
+    width:44px;
+    height:44px;
+    border-radius:8px;
+    border:1.5px dashed var(--ink-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink);
+    flex-shrink:0;
+  }
+  .icon-preview-box svg{ width:24px; height:24px; stroke:currentColor; }
 
   .icon-grid{
     display:grid;
@@ -630,6 +719,7 @@
   }
   .icon-choice:hover{ background:rgba(0,0,0,0.08); }
   .icon-choice.selected{ border-color:var(--ink); background:var(--accent-yellow); }
+  .icon-choice:disabled{ cursor:default; opacity:1; }
   .icon-choice svg{ width:20px; height:20px; stroke:currentColor; }
 
   .color-grid{
@@ -723,6 +813,19 @@
     background: var(--margin-red) !important;
     color: #fff !important;
   }
+  .danger-btn.icon-text-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+  #placeDelete{
+    width:34px;
+    height:34px;
+    padding:0;
+    border-radius:50%;
+  }
+  .icon-text-btn svg{ width:15px; height:15px; stroke:currentColor; flex-shrink:0; }
 
   .tag-url-box{
     margin-top:12px;
@@ -786,6 +889,7 @@
 
     .page{ padding:18px 14px 24px 34px; border-radius:0 10px 10px 10px; }
     .page::before{ left:20px; }
+    .letter-group-header{ left:-18px; }
 
     /* Keep name, count, and actions all on one line on mobile —
        the name truncates with an ellipsis (same as desktop) rather
@@ -832,7 +936,10 @@
 <div class="overlay" id="adjustOverlay">
   <div class="sticky">
     <div class="loc-label" id="adjustLoc">LOCATION</div>
-    <input type="text" id="adjustName" class="adjust-name-input">
+    <div class="adjust-name-row">
+      <button type="button" id="adjustIconBtn" class="icon-btn" title="Change icon" aria-label="Change icon"></button>
+      <input type="text" id="adjustName" class="adjust-name-input">
+    </div>
     <div class="counter-block">
       <button id="adjustMinus">−</button>
       <div class="count-display" id="adjustCount">0</div>
@@ -847,6 +954,7 @@
 <!-- Add new place popup (replaces the old browser prompt) -->
 <div class="overlay" id="addPlaceOverlay">
   <div class="sticky">
+    <button id="placeCancelX" class="sticky-close-x" title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <div class="loc-label" id="placeOverlayLabel">New Storage Place</div>
     <h2 id="placeOverlayTitle">Add a place</h2>
     <div class="register-form">
@@ -857,9 +965,11 @@
       <label>Name</label>
       <input type="text" id="placeName" placeholder="e.g. Garage Shelf">
     </div>
-    <div class="sticky-actions" style="margin-top:16px;">
-      <button id="placeCancel" class="secondary-btn">Cancel</button>
-      <button id="placeSave">Save</button>
+    <div class="sticky-actions" id="placeActions" style="margin-top:16px; justify-content:space-between;">
+      <button id="placeDelete" class="danger-btn icon-text-btn" title="Remove place" aria-label="Remove place" style="display:none;"></button>
+      <div style="display:flex; gap:8px;">
+        <button id="placeSave">Save</button>
+      </div>
     </div>
   </div>
 </div>
@@ -874,6 +984,11 @@
       <select id="regLocation"></select>
       <label>Item name</label>
       <input type="text" id="regName" placeholder="e.g. Eggs">
+      <label>Icon (optional)</label>
+      <div class="icon-pick-row">
+        <button type="button" id="regIconBtn" class="icon-btn" title="Choose icon" aria-label="Choose icon"></button>
+        <span class="icon-pick-hint">Tap to pick an icon</span>
+      </div>
       <label>Starting count</label>
       <input type="number" id="regCount" value="1" min="0">
     </div>
@@ -923,6 +1038,12 @@
       </button>
     </div>
 
+    <div class="settings-row settings-row-block">
+      <span>Custom icons</span>
+      <div class="icon-grid" id="settingsIconGrid"></div>
+      <p class="settings-note">Add icons here to use them on any place or item — paste SVG markup copied from an icon site. Removing one here removes it everywhere it was used.</p>
+    </div>
+
     <div class="settings-row settings-row-io">
       <div class="settings-io-item">
         <button id="loadLayoutBtn" class="settings-icon-btn" title="Load place layout from CSV" aria-label="Load layout"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></button>
@@ -935,6 +1056,44 @@
     </div>
     <p class="settings-note">Load reads only the place layout (names, icons, colors, order) from a CSV — it won't touch your item counts. Export saves everything (places + items) as a CSV, handy for keeping a backup in GitHub.</p>
     <input type="file" id="loadLayoutFile" accept=".csv,text/csv" style="display:none;">
+  </div>
+</div>
+
+<!-- Item icon picker (shared by add-item row, adjust popup, register popup) -->
+<div class="overlay" id="itemIconOverlay">
+  <div class="sticky">
+    <button id="itemIconCancel" class="sticky-close-x" title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="loc-label">Item Icon</div>
+    <h2>Choose an icon</h2>
+    <div class="icon-grid" id="itemIconGrid"></div>
+  </div>
+</div>
+
+<!-- New custom icon form (name + paste SVG code + upload an .svg file) -->
+<div class="overlay" id="customIconOverlay">
+  <div class="sticky">
+    <button id="customIconCancelX" class="sticky-close-x" title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="loc-label">New Custom Icon</div>
+    <h2>Add an icon</h2>
+    <div class="register-form">
+      <label>Name</label>
+      <input type="text" id="customIconName" placeholder="e.g. Reach-in Cooler">
+
+      <label>SVG file</label>
+      <div class="icon-upload-row">
+        <button type="button" id="customIconUploadBtn" class="icon-btn" title="Upload an .svg file" aria-label="Upload SVG file" style="width:38px;height:38px;"></button>
+        <div id="customIconPreview" class="icon-preview-box"></div>
+        <span class="icon-pick-hint">Upload a .svg file, or paste code below</span>
+      </div>
+      <input type="file" id="customIconFile" accept=".svg,image/svg+xml" style="display:none;">
+
+      <label>SVG code</label>
+      <textarea id="customIconSvg" rows="4" placeholder="<svg viewBox=&quot;0 0 24 24&quot;>...</svg>"></textarea>
+    </div>
+    <div class="sticky-actions" style="margin-top:16px;">
+      <button id="customIconCancel" class="secondary-btn">Cancel</button>
+      <button id="customIconSave">Save icon</button>
+    </div>
   </div>
 </div>
 
@@ -1038,6 +1197,7 @@
   // ---- Item search / sort (kept outside renderPage so typing doesn't
   // trigger a full page rebuild and steal focus from the search box) ----
   let itemQuery = '';
+  let newItemIcon = '';
   const SORT_MODE_KEY = 'inventory-notebook-sort-mode';
   let itemSortMode = localStorage.getItem(SORT_MODE_KEY) || 'alpha';
   function saveSortMode(){ localStorage.setItem(SORT_MODE_KEY, itemSortMode); }
@@ -1055,11 +1215,16 @@
   const DOWNLOAD_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="M7 11l5 5 5-5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>';
   const MOON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg>';
   const SUN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg>';
+  const ICON_PICK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
 
-  function itemRowHTML(it){
+  function itemRowHTML(it, groupLetter){
     const countClass = it.count === 0 ? ' zero' : '';
+    const iconHtml = it.icon ? `<span class="item-icon-mini">${iconGlyph(it.icon)}</span>` : '';
+    const letterHtml = groupLetter ? `<span class="letter-group-header">${groupLetter}</span>` : '';
     return `
       <div class="item-row">
+        ${letterHtml}
+        ${iconHtml}
         <div class="item-name">${it.name}</div>
         <button class="icon-btn item-tag-btn" data-showlink="${it.id}" title="Write to NFC tag">${LINK_SVG}</button>
         <div class="item-actions">
@@ -1086,18 +1251,16 @@
       listEl.innerHTML = `<p class="empty-note">No items match your search.</p>`;
     } else if(itemSortMode === 'stock'){
       items = [...items].sort((a, b) => a.count - b.count || a.name.localeCompare(b.name));
-      listEl.innerHTML = items.map(itemRowHTML).join('');
+      listEl.innerHTML = items.map(it => itemRowHTML(it)).join('');
     } else {
       items = [...items].sort((a, b) => a.name.localeCompare(b.name));
       let html = '';
       let lastLetter = '';
       items.forEach(it => {
         const letter = (it.name.trim().charAt(0) || '#').toUpperCase();
-        if(letter !== lastLetter){
-          html += `<div class="letter-group-header">${letter}</div>`;
-          lastLetter = letter;
-        }
-        html += itemRowHTML(it);
+        const isNewGroup = letter !== lastLetter;
+        lastLetter = letter;
+        html += itemRowHTML(it, isNewGroup ? letter : null);
       });
       listEl.innerHTML = html;
     }
@@ -1131,7 +1294,7 @@
 
     const titleLabel = loc.icon ? `${locIconHTML(loc)}<span>${loc.name}</span>` : `<span>${loc.name}</span>`;
     let html = `<div class="location-title"><span class="title-main">${titleLabel}</span>`;
-    html += `<div class="title-actions"><button class="edit-loc" data-loc="${loc.id}" title="Edit place">${PENCIL_SVG}</button><button class="del-loc" data-loc="${loc.id}" title="Remove place">${TRASH_SVG}</button></div></div>`;
+    html += `<div class="title-actions"><button class="edit-loc" data-loc="${loc.id}" title="Edit place">${PENCIL_SVG}</button></div></div>`;
 
     html += `
       <div class="item-controls">
@@ -1145,6 +1308,7 @@
 
     html += `
       <div class="add-item-row">
+        <button type="button" id="newItemIconBtn" class="icon-btn" title="Choose icon" aria-label="Choose icon" style="flex-shrink:0;">${newItemIcon ? iconGlyph(newItemIcon) : ICON_PICK_SVG}</button>
         <input type="text" id="newItemName" placeholder="New item name...">
         <input type="number" id="newItemCount" value="1" min="0">
         <button id="addItemBtn" title="Add item">+</button>
@@ -1170,20 +1334,13 @@
     if(editLocBtn){
       editLocBtn.onclick = () => openEditPlace(loc.id);
     }
-    const delLocBtn = page.querySelector('.del-loc');
-    if(delLocBtn){
-      delLocBtn.onclick = () => {
-        showConfirm(
-          'Remove this place?',
-          `"${loc.name}" and all its items will be removed from the notebook. This can't be undone.`,
-          'Remove place',
-          () => {
-            data.items = data.items.filter(it => it.locationId !== loc.id);
-            data.locations = data.locations.filter(l => l.id !== loc.id);
-            data.activeLocation = data.locations[0] ? data.locations[0].id : null;
-            saveData(); render();
-          }
-        );
+    const newItemIconBtn = document.getElementById('newItemIconBtn');
+    if(newItemIconBtn){
+      newItemIconBtn.onclick = () => {
+        openItemIconPicker(newItemIcon, (value) => {
+          newItemIcon = value;
+          newItemIconBtn.innerHTML = value ? iconGlyph(value) : ICON_PICK_SVG;
+        });
       };
     }
     const addBtn = document.getElementById('addItemBtn');
@@ -1196,7 +1353,8 @@
         const count = parseInt(countEl.value, 10) || 0;
         const id = uid('item');
         const tagId = uid('tag');
-        data.items.push({id, tagId, locationId: loc.id, name, count});
+        data.items.push({id, tagId, locationId: loc.id, name, count, icon: newItemIcon || undefined});
+        newItemIcon = '';
         saveData(); render();
         showLink(id);
       };
@@ -1214,16 +1372,29 @@
 
   // ---- Adjust popup (tap a count, or scan a known tag) ----
   let adjustingId = null;
+  let adjustPendingIcon = '';
+  function updateAdjustIconBtn(){
+    const btn = document.getElementById('adjustIconBtn');
+    if(btn) btn.innerHTML = adjustPendingIcon ? iconGlyph(adjustPendingIcon) : ICON_PICK_SVG;
+  }
   function openAdjust(itemId){
     const it = data.items.find(i => i.id === itemId);
     if(!it) return;
     adjustingId = itemId;
+    adjustPendingIcon = it.icon || '';
     const loc = data.locations.find(l => l.id === it.locationId);
     document.getElementById('adjustLoc').textContent = loc ? loc.name : '';
     document.getElementById('adjustName').value = it.name;
     document.getElementById('adjustCount').textContent = it.count;
+    updateAdjustIconBtn();
     document.getElementById('adjustOverlay').classList.add('show');
   }
+  document.getElementById('adjustIconBtn').onclick = () => {
+    openItemIconPicker(adjustPendingIcon, (value) => {
+      adjustPendingIcon = value;
+      updateAdjustIconBtn();
+    });
+  };
   document.getElementById('adjustPlus').onclick = () => {
     const it = data.items.find(i => i.id === adjustingId);
     if(!it) return;
@@ -1246,6 +1417,7 @@
     if(it){
       const newName = document.getElementById('adjustName').value.trim();
       if(newName) it.name = newName;
+      it.icon = adjustPendingIcon || undefined;
       saveData();
     }
     document.getElementById('adjustOverlay').classList.remove('show');
@@ -1438,6 +1610,7 @@
     document.getElementById('placeOverlayLabel').textContent = 'New Storage Place';
     document.getElementById('placeOverlayTitle').textContent = 'Add a place';
     document.getElementById('placeSave').textContent = 'Save';
+    document.getElementById('placeDelete').style.display = 'none';
     renderPlaceForm();
     const nameInput = document.getElementById('placeName');
     nameInput.value = '';
@@ -1455,6 +1628,7 @@
     document.getElementById('placeOverlayLabel').textContent = 'Edit Storage Place';
     document.getElementById('placeOverlayTitle').textContent = 'Edit place';
     document.getElementById('placeSave').textContent = 'Save changes';
+    document.getElementById('placeDelete').style.display = 'inline-block';
     renderPlaceForm();
     const nameInput = document.getElementById('placeName');
     nameInput.value = loc.name;
@@ -1464,8 +1638,27 @@
   }
 
 
-  document.getElementById('placeCancel').onclick = () => {
+  document.getElementById('placeCancelX').onclick = () => {
     document.getElementById('addPlaceOverlay').classList.remove('show');
+  };
+
+  document.getElementById('placeDelete').innerHTML = TRASH_SVG;
+  document.getElementById('placeDelete').onclick = () => {
+    const loc = data.locations.find(l => l.id === editingLocId);
+    if(!loc) return;
+    showConfirm(
+      'Remove this place?',
+      `"${loc.name}" and all its items will be removed from the notebook. This can't be undone.`,
+      'Remove place',
+      () => {
+        data.items = data.items.filter(it => it.locationId !== loc.id);
+        data.locations = data.locations.filter(l => l.id !== loc.id);
+        data.activeLocation = data.locations[0] ? data.locations[0].id : null;
+        saveData();
+        document.getElementById('addPlaceOverlay').classList.remove('show');
+        render();
+      }
+    );
   };
 
   function saveNewPlace(){
@@ -1497,32 +1690,259 @@
     if(e.key === 'Enter') saveNewPlace();
   });
 
-  // Add a custom icon: paste SVG markup copied from an icon site (see the
-  // in-app tips). Stored in localStorage so it's available for every future
-  // place you add.
-  function openAddCustomIcon(){
-    const label = prompt('Name this icon (e.g. "Reach-in Cooler"):');
-    if(!label) return;
-    let svg = prompt('Paste the SVG code for the icon (the whole <svg>...</svg> tag):');
-    if(!svg) return;
-    svg = svg.trim();
-    if(!/^<svg[\s>]/i.test(svg) || !/<\/svg>\s*$/i.test(svg)){
-      alert('That doesn\'t look like SVG markup — it should start with <svg and end with </svg>.');
+  // Add a custom icon via a proper popup (name + paste SVG code + upload an
+  // .svg file). Stored in localStorage so it's available for every future
+  // place OR item you add. Pass onCreated(value) to receive the new icon's
+  // value (e.g. from the item picker or Settings); if omitted, it falls
+  // back to selecting it in the place-icon grid (the original behavior).
+  function openAddCustomIcon(onCreated){
+    openCustomIconForm(onCreated);
+  }
+
+  let customIconOnCreated = null;
+  function openCustomIconForm(onCreated){
+    customIconOnCreated = onCreated;
+    const nameInput = document.getElementById('customIconName');
+    const svgInput = document.getElementById('customIconSvg');
+    const fileInput = document.getElementById('customIconFile');
+    nameInput.value = '';
+    svgInput.value = '';
+    fileInput.value = '';
+    nameInput.classList.remove('input-error');
+    svgInput.classList.remove('input-error');
+    updateCustomIconPreview();
+    document.getElementById('customIconOverlay').classList.add('show');
+    nameInput.focus();
+  }
+
+  function updateCustomIconPreview(){
+    const svg = document.getElementById('customIconSvg').value.trim();
+    const preview = document.getElementById('customIconPreview');
+    if(/^<svg[\s>]/i.test(svg) && /<\/svg>\s*$/i.test(svg)){
+      preview.innerHTML = sanitizeSvg(svg);
+      preview.style.borderStyle = 'solid';
+      preview.style.opacity = '1';
+    } else {
+      preview.innerHTML = ICON_PICK_SVG;
+      preview.style.borderStyle = 'dashed';
+      preview.style.opacity = '0.45';
+    }
+  }
+
+  document.getElementById('customIconUploadBtn').innerHTML = UPLOAD_SVG;
+  document.getElementById('customIconUploadBtn').onclick = () => {
+    document.getElementById('customIconFile').click();
+  };
+  document.getElementById('customIconFile').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    if(!/\.svg$/i.test(file.name) && file.type !== 'image/svg+xml'){
+      alert('Please choose an .svg file.');
+      e.target.value = '';
       return;
     }
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.getElementById('customIconSvg').value = String(reader.result).trim();
+      updateCustomIconPreview();
+      const nameInput = document.getElementById('customIconName');
+      if(!nameInput.value.trim()){
+        nameInput.value = file.name.replace(/\.svg$/i, '').replace(/[-_]+/g, ' ');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+  document.getElementById('customIconSvg').addEventListener('input', updateCustomIconPreview);
+
+  function saveCustomIconForm(){
+    const nameInput = document.getElementById('customIconName');
+    const svgInput = document.getElementById('customIconSvg');
+    const label = nameInput.value.trim();
+    let svg = svgInput.value.trim();
+
+    if(!label){
+      nameInput.classList.add('input-error');
+      nameInput.focus();
+      return;
+    }
+    nameInput.classList.remove('input-error');
+
+    if(!/^<svg[\s>]/i.test(svg) || !/<\/svg>\s*$/i.test(svg)){
+      svgInput.classList.add('input-error');
+      alert('That doesn\'t look like SVG markup — paste code starting with <svg and ending with </svg>, or upload a .svg file.');
+      return;
+    }
+    svgInput.classList.remove('input-error');
+
     svg = sanitizeSvg(svg);
     const id = uid('icon');
     customIcons.push({id, label, svg});
     saveCustomIcons();
-    selectedPlaceIcon = `custom:${id}`;
-    renderPlaceForm();
+    const value = `custom:${id}`;
+    document.getElementById('customIconOverlay').classList.remove('show');
+    if(typeof customIconOnCreated === 'function'){ customIconOnCreated(value); }
+    else { selectedPlaceIcon = value; }
+    refreshIconGrids();
+  }
+  document.getElementById('customIconSave').onclick = saveCustomIconForm;
+  document.getElementById('customIconCancel').onclick = () => {
+    document.getElementById('customIconOverlay').classList.remove('show');
+  };
+  document.getElementById('customIconCancelX').onclick = () => {
+    document.getElementById('customIconOverlay').classList.remove('show');
+  };
+
+  // Re-renders whichever icon grids are currently in the DOM, so a newly
+  // added (or removed) custom icon shows up immediately everywhere.
+  function refreshIconGrids(){
+    if(document.getElementById('iconGrid')) renderPlaceForm();
+    if(document.getElementById('itemIconGrid')) renderItemIconGrid();
+    if(document.getElementById('settingsIconGrid')) renderSettingsIconGrid();
+  }
+
+  // ---- Item icon picker (used by the add-item row, adjust popup, and
+  // register popup) — clicking any icon applies it immediately and closes. ----
+  let selectedItemIcon = '';
+  let itemIconApplyCallback = null;
+
+  function chooseItemIcon(value){
+    selectedItemIcon = value;
+    if(typeof itemIconApplyCallback === 'function'){ itemIconApplyCallback(value); }
+    document.getElementById('itemIconOverlay').classList.remove('show');
+  }
+
+  function openItemIconPicker(currentValue, onSelect){
+    selectedItemIcon = currentValue || '';
+    itemIconApplyCallback = onSelect;
+    renderItemIconGrid();
+    document.getElementById('itemIconOverlay').classList.add('show');
+  }
+
+  function renderItemIconGrid(){
+    const grid = document.getElementById('itemIconGrid');
+    if(!grid) return;
+    grid.innerHTML = '';
+
+    const noneTile = document.createElement('button');
+    noneTile.type = 'button';
+    noneTile.title = 'No icon';
+    noneTile.className = 'icon-choice' + (!selectedItemIcon ? ' selected' : '');
+    noneTile.textContent = '—';
+    noneTile.onclick = () => chooseItemIcon('');
+    grid.appendChild(noneTile);
+
+    const emojiLabel = document.createElement('div');
+    emojiLabel.className = 'icon-section-label';
+    emojiLabel.textContent = 'Icons';
+    grid.appendChild(emojiLabel);
+
+    EMOJI_ICONS.forEach(icon => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'icon-choice' + (icon === selectedItemIcon ? ' selected' : '');
+      b.textContent = icon;
+      b.onclick = () => chooseItemIcon(icon);
+      grid.appendChild(b);
+    });
+
+    const customLabel = document.createElement('div');
+    customLabel.className = 'icon-section-label';
+    customLabel.textContent = 'Custom';
+    grid.appendChild(customLabel);
+
+    customIcons.forEach(c => {
+      const value = `custom:${c.id}`;
+      const wrap = document.createElement('div');
+      wrap.className = 'icon-choice-wrap';
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.title = c.label;
+      b.className = 'icon-choice' + (value === selectedItemIcon ? ' selected' : '');
+      b.innerHTML = c.svg;
+      b.onclick = () => chooseItemIcon(value);
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'icon-choice-del';
+      del.title = 'Remove this custom icon';
+      del.textContent = '✕';
+      del.onclick = (e) => {
+        e.stopPropagation();
+        if(!confirm(`Remove the "${c.label}" icon?`)) return;
+        customIcons = customIcons.filter(ci => ci.id !== c.id);
+        saveCustomIcons();
+        if(selectedItemIcon === value) selectedItemIcon = '';
+        renderItemIconGrid();
+      };
+      wrap.appendChild(b);
+      wrap.appendChild(del);
+      grid.appendChild(wrap);
+    });
+
+    const addTile = document.createElement('button');
+    addTile.type = 'button';
+    addTile.className = 'icon-choice icon-choice-add';
+    addTile.title = 'Add a new icon';
+    addTile.textContent = '+';
+    addTile.onclick = () => openAddCustomIcon((value) => chooseItemIcon(value));
+    grid.appendChild(addTile);
+  }
+  document.getElementById('itemIconCancel').onclick = () => {
+    document.getElementById('itemIconOverlay').classList.remove('show');
+  };
+
+  // ---- Settings: custom-icon manager (add/remove only, shared pool) ----
+  function renderSettingsIconGrid(){
+    const grid = document.getElementById('settingsIconGrid');
+    if(!grid) return;
+    grid.innerHTML = '';
+
+    customIcons.forEach(c => {
+      const wrap = document.createElement('div');
+      wrap.className = 'icon-choice-wrap';
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.title = c.label;
+      b.className = 'icon-choice';
+      b.innerHTML = c.svg;
+      b.disabled = true;
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'icon-choice-del';
+      del.title = 'Remove this custom icon';
+      del.textContent = '✕';
+      del.onclick = (e) => {
+        e.stopPropagation();
+        if(!confirm(`Remove the "${c.label}" icon?`)) return;
+        customIcons = customIcons.filter(ci => ci.id !== c.id);
+        saveCustomIcons();
+        refreshIconGrids();
+      };
+      wrap.appendChild(b);
+      wrap.appendChild(del);
+      grid.appendChild(wrap);
+    });
+
+    const addTile = document.createElement('button');
+    addTile.type = 'button';
+    addTile.className = 'icon-choice icon-choice-add';
+    addTile.title = 'Add a new icon';
+    addTile.textContent = '+';
+    addTile.onclick = () => openAddCustomIcon();
+    grid.appendChild(addTile);
   }
 
 
   // ---- Register popup (scan an unknown tag) ----
   let pendingTagId = null;
+  let regPendingIcon = '';
+  function updateRegIconBtn(){
+    const btn = document.getElementById('regIconBtn');
+    if(btn) btn.innerHTML = regPendingIcon ? iconGlyph(regPendingIcon) : ICON_PICK_SVG;
+  }
   function openRegister(tagId){
     pendingTagId = tagId;
+    regPendingIcon = '';
     const sel = document.getElementById('regLocation');
     sel.innerHTML = '';
     data.locations.forEach(loc => {
@@ -1535,8 +1955,15 @@
     sel.appendChild(newOpt);
     document.getElementById('regName').value = '';
     document.getElementById('regCount').value = 1;
+    updateRegIconBtn();
     document.getElementById('registerOverlay').classList.add('show');
   }
+  document.getElementById('regIconBtn').onclick = () => {
+    openItemIconPicker(regPendingIcon, (value) => {
+      regPendingIcon = value;
+      updateRegIconBtn();
+    });
+  };
   document.getElementById('regSave').onclick = () => {
     let locId = document.getElementById('regLocation').value;
     if(locId === '__new__'){
@@ -1549,7 +1976,7 @@
     if(!name){ alert('Give the item a name first.'); return; }
     const count = parseInt(document.getElementById('regCount').value, 10) || 0;
     const id = uid('item');
-    data.items.push({id, tagId: pendingTagId, locationId: locId, name, count});
+    data.items.push({id, tagId: pendingTagId, locationId: locId, name, count, icon: regPendingIcon || undefined});
     data.activeLocation = locId;
     saveData();
     document.getElementById('registerOverlay').classList.remove('show');
@@ -1713,6 +2140,7 @@
   applyTheme(currentTheme);
 
   document.getElementById('settingsBtn').onclick = () => {
+    renderSettingsIconGrid();
     document.getElementById('settingsOverlay').classList.add('show');
   };
   document.getElementById('settingsDone').onclick = () => {
