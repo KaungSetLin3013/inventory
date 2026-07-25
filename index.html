@@ -104,6 +104,19 @@
     white-space:nowrap;
     border:none;
     text-align:left;
+    position:relative;
+  }
+  .tab::after{
+    content:'';
+    position:absolute;
+    right:0;
+    bottom:0;
+    width:13px;
+    height:13px;
+    background:var(--paper-dark);
+    clip-path: polygon(100% 100%, 0 100%, 100% 0);
+    filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.25));
+    pointer-events:none;
   }
   .tab:hover{ transform: translateX(0px); opacity:1;}
   .tab.active{ transform: translateX(0px); opacity:1; }
@@ -114,8 +127,12 @@
     border:2px dashed var(--ink-soft) !important;
     opacity:0.6;
   }
+  .tab-add::after{ display:none; }
   .tab-icon{ display:none; }
+  .tab-icon svg{ width:1.1rem; height:1.1rem; stroke:currentColor; vertical-align:-0.15em; }
   .tab-label{ display:inline; }
+  .tab-label-icon{ display:inline-flex; vertical-align:-0.2em; }
+  .tab-label-icon svg{ width:1.05rem; height:1.05rem; stroke:currentColor; }
 
   .page{
     flex:1;
@@ -139,6 +156,10 @@
     background: var(--margin-red);
     opacity:0.55;
   }
+  @keyframes swipeInLeft{ from{ transform:translateX(18px); opacity:0.4; } to{ transform:translateX(0); opacity:1; } }
+  @keyframes swipeInRight{ from{ transform:translateX(-18px); opacity:0.4; } to{ transform:translateX(0); opacity:1; } }
+  .swipe-in-left{ animation: swipeInLeft .2s ease; }
+  .swipe-in-right{ animation: swipeInRight .2s ease; }
 
   .location-title{
     font-family:'Kalam', cursive;
@@ -156,7 +177,12 @@
     gap:8px;
     min-width:0;
   }
-  .location-title .del-loc{
+  .location-title .title-actions{
+    display:flex;
+    gap:6px;
+    flex-shrink:0;
+  }
+  .location-title .del-loc, .location-title .edit-loc{
     font-family:'Space Mono', monospace;
     font-size:0.7rem;
     color:var(--ink-soft);
@@ -167,7 +193,7 @@
     cursor:pointer;
     opacity:0.6;
   }
-  .location-title .del-loc:hover{opacity:1;}
+  .location-title .del-loc:hover, .location-title .edit-loc:hover{opacity:1;}
 
   .item-row{
     display:flex;
@@ -230,6 +256,60 @@
     color:var(--ink-soft);
     font-style:italic;
     margin-top:10px;
+  }
+
+  .item-controls{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    margin-bottom:4px;
+    flex-wrap:wrap;
+  }
+  .item-controls input[type="text"]{
+    font-family:'Patrick Hand', cursive;
+    font-size:1rem;
+    background:transparent;
+    border:none;
+    border-bottom:2px dotted var(--ink-soft);
+    padding:4px 2px;
+    flex:1;
+    min-width:100px;
+    color:var(--ink);
+  }
+  .item-controls input[type="text"]:focus{ outline:none; border-bottom-color:var(--ink); }
+  .sort-toggle{
+    display:flex;
+    border:1.5px solid var(--ink-soft);
+    border-radius:8px;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .sort-btn{
+    font-family:'Space Mono', monospace;
+    font-size:0.68rem;
+    background:transparent;
+    border:none;
+    color:var(--ink-soft);
+    padding:6px 10px;
+    cursor:pointer;
+  }
+  .sort-btn + .sort-btn{ border-left:1.5px solid var(--ink-soft); }
+  .sort-btn.active{ background:var(--accent-yellow); color:var(--ink); }
+
+  .letter-group-header{
+    font-family:'Space Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.05em;
+    color:var(--ink-soft);
+    margin:10px 0 2px;
+    opacity:0.8;
+  }
+  .letter-group-header:first-child{ margin-top:0; }
+
+  .item-count.zero{
+    background:transparent;
+    border:1.5px solid var(--margin-red);
+    color:var(--margin-red);
   }
 
   .add-item-row{
@@ -394,6 +474,68 @@
   .icon-choice.selected{ border-color:var(--ink); background:var(--accent-yellow); }
   .icon-choice svg{ width:20px; height:20px; stroke:currentColor; }
 
+  .color-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(34px, 1fr));
+    gap:8px;
+    margin-top:6px;
+    padding:6px;
+    background:rgba(0,0,0,0.05);
+    border-radius:8px;
+  }
+  .color-swatch{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    border:2px solid transparent;
+    cursor:pointer;
+    padding:0;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12);
+    position:relative;
+  }
+  .color-swatch:hover{ transform:scale(1.08); }
+  .color-swatch.selected{ border-color:var(--ink); }
+  .color-swatch.selected::after{
+    content:'✓';
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:0.85rem;
+    text-shadow:0 1px 1px rgba(0,0,0,0.4);
+  }
+
+  .icon-choice-add{
+    border:2px dashed var(--ink-soft);
+    color:var(--ink-soft);
+    font-size:1.2rem;
+    font-weight:700;
+  }
+  .icon-choice-add:hover{ color:var(--ink); border-color:var(--ink); background:rgba(0,0,0,0.05); }
+
+  .icon-choice-wrap{ position:relative; }
+  .icon-choice-wrap .icon-choice{ width:100%; }
+  .icon-choice-del{
+    position:absolute;
+    top:-5px;
+    right:-5px;
+    width:16px;
+    height:16px;
+    line-height:14px;
+    padding:0;
+    font-size:0.6rem;
+    border:1px solid var(--ink);
+    border-radius:50%;
+    background:var(--paper);
+    color:var(--ink);
+    cursor:pointer;
+    opacity:0;
+    transition:opacity 0.15s;
+  }
+  .icon-choice-wrap:hover .icon-choice-del{ opacity:1; }
+
   .icon-section-label{
     grid-column: 1 / -1;
     font-family:'Space Mono', monospace;
@@ -462,14 +604,33 @@
       height:44px;
       padding:0;
       border-radius:10px;
-      transform:none;
+      transform:none !important;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       display:flex;
       align-items:center;
       justify-content:center;
     }
-    .tab:hover, .tab.active{ transform:none; }
+    .tab:hover, .tab.active{ transform:none !important; }
+    .tab::after{
+      left:auto;
+      right:0;
+      bottom:0;
+      width:11px;
+      height:11px;
+      clip-path: polygon(100% 100%, 0 100%, 100% 0);
+      filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.25));
+      transform-origin: 100% 100%;
+    }
+    .tab.active::after{
+      animation: pageTurn .35s ease forwards;
+    }
+    @keyframes pageTurn{
+      0%{ transform: rotate(0deg) scale(1); }
+      55%{ transform: rotate(-35deg) scale(1.5); }
+      100%{ transform: rotate(-14deg) scale(1.45); }
+    }
     .tab-icon{ display:inline; font-size:1.3rem; line-height:1; }
+    .tab-icon svg{ width:1.3rem; height:1.3rem; stroke:currentColor; vertical-align:middle; }
     .tab-label{ display:none; }
 
     .page{ padding:18px 14px 24px 34px; border-radius:0 10px 10px 10px; }
@@ -535,11 +696,13 @@
 <!-- Add new place popup (replaces the old browser prompt) -->
 <div class="overlay" id="addPlaceOverlay">
   <div class="sticky">
-    <div class="loc-label">New Storage Place</div>
-    <h2>Add a place</h2>
+    <div class="loc-label" id="placeOverlayLabel">New Storage Place</div>
+    <h2 id="placeOverlayTitle">Add a place</h2>
     <div class="register-form">
       <label>Icon</label>
       <div class="icon-grid" id="iconGrid"></div>
+      <label>Tab color</label>
+      <div class="color-grid" id="colorGrid"></div>
       <label>Name</label>
       <input type="text" id="placeName" placeholder="e.g. Garage Shelf">
     </div>
@@ -587,6 +750,11 @@
 <script>
   const STORAGE_KEY = 'inventory-notebook-data-v1';
   const TAB_COLORS = ['var(--tab-1)','var(--tab-2)','var(--tab-3)','var(--tab-4)','var(--tab-5)'];
+  const TAB_SWATCHES = [
+    '#c0524b', '#c68a3e', '#8a8a4e', '#5c7a5e', '#3f7d6b',
+    '#5d7899', '#5a6da8', '#8a6a9e', '#b45f7a', '#a85a3f',
+    '#9e7b4f', '#4a5d6b'
+  ];
 
   function loadData(){
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -610,6 +778,25 @@
 
   let data = loadData();
 
+  // ---- Custom icons (user-added, saved separately so they survive resets) ----
+  const CUSTOM_ICONS_KEY = 'inventory-notebook-custom-icons-v1';
+  function loadCustomIcons(){
+    const raw = localStorage.getItem(CUSTOM_ICONS_KEY);
+    if(raw){ try{ return JSON.parse(raw); }catch(e){ /* fall through */ } }
+    return [];
+  }
+  function saveCustomIcons(){ localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(customIcons)); }
+  let customIcons = loadCustomIcons();
+
+  // Very light sanitizing for pasted SVG markup — strips script tags and
+  // inline event handlers before it ever touches innerHTML.
+  function sanitizeSvg(svg){
+    return svg
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/\son\w+\s*=\s*"[^"]*"/gi, '')
+      .replace(/\son\w+\s*=\s*'[^']*'/gi, '');
+  }
+
   // Pulls a short icon out of a location name for the mobile tab
   // strip — the leading emoji if the name starts with one (e.g.
   // "🥚 Fridge" -> "🥚"), otherwise the first letter as a fallback.
@@ -626,9 +813,9 @@
     data.locations.forEach((loc, i) => {
       const btn = document.createElement('button');
       btn.className = 'tab' + (loc.id === data.activeLocation ? ' active' : '');
-      btn.style.background = TAB_COLORS[i % TAB_COLORS.length];
+      btn.style.background = loc.color || TAB_COLORS[i % TAB_COLORS.length];
       btn.title = loc.name;
-      const tabLabel = loc.icon ? `${iconGlyph(loc.icon)} ${loc.name}` : loc.name;
+      const tabLabel = loc.icon ? `<span class="tab-label-icon">${iconGlyph(loc.icon)}</span> ${loc.name}` : loc.name;
       btn.innerHTML = `<span class="tab-icon">${iconGlyph(loc.icon) || tabIcon(loc.name)}</span><span class="tab-label">${tabLabel}</span>`;
       btn.onclick = () => { data.activeLocation = loc.id; saveData(); render(); };
       tabsEl.appendChild(btn);
@@ -641,33 +828,99 @@
     tabsEl.appendChild(addBtn);
   }
 
+  // ---- Item search / sort (kept outside renderPage so typing doesn't
+  // trigger a full page rebuild and steal focus from the search box) ----
+  let itemQuery = '';
+  const SORT_MODE_KEY = 'inventory-notebook-sort-mode';
+  let itemSortMode = localStorage.getItem(SORT_MODE_KEY) || 'alpha';
+  function saveSortMode(){ localStorage.setItem(SORT_MODE_KEY, itemSortMode); }
+
+  function itemRowHTML(it){
+    const countClass = it.count === 0 ? ' zero' : '';
+    return `
+      <div class="item-row">
+        <div class="item-name">${it.name}</div>
+        <button class="item-tag-btn" data-showlink="${it.id}">tag link</button>
+        <div class="item-count${countClass}" data-openadjust="${it.id}">${it.count}</div>
+        <div class="item-actions">
+          <button class="icon-btn" data-quickminus="${it.id}">−</button>
+          <button class="icon-btn" data-quickplus="${it.id}">+</button>
+          <button class="icon-btn" data-delitem="${it.id}">✕</button>
+        </div>
+      </div>`;
+  }
+
+  function renderItemsList(){
+    const loc = data.locations.find(l => l.id === data.activeLocation) || data.locations[0];
+    const listEl = document.getElementById('itemsList');
+    if(!loc || !listEl) return;
+
+    const allItems = data.items.filter(it => it.locationId === loc.id);
+    const query = itemQuery.trim().toLowerCase();
+    let items = query ? allItems.filter(it => it.name.toLowerCase().includes(query)) : allItems;
+
+    if(allItems.length === 0){
+      listEl.innerHTML = `<p class="empty-note">Nothing logged here yet. Add an item below.</p>`;
+    } else if(items.length === 0){
+      listEl.innerHTML = `<p class="empty-note">No items match your search.</p>`;
+    } else if(itemSortMode === 'stock'){
+      items = [...items].sort((a, b) => a.count - b.count || a.name.localeCompare(b.name));
+      listEl.innerHTML = items.map(itemRowHTML).join('');
+    } else {
+      items = [...items].sort((a, b) => a.name.localeCompare(b.name));
+      let html = '';
+      let lastLetter = '';
+      items.forEach(it => {
+        const letter = (it.name.trim().charAt(0) || '#').toUpperCase();
+        if(letter !== lastLetter){
+          html += `<div class="letter-group-header">${letter}</div>`;
+          lastLetter = letter;
+        }
+        html += itemRowHTML(it);
+      });
+      listEl.innerHTML = html;
+    }
+
+    listEl.querySelectorAll('[data-openadjust]').forEach(el => {
+      el.onclick = () => openAdjust(el.dataset.openadjust);
+    });
+    listEl.querySelectorAll('[data-quickplus]').forEach(el => {
+      el.onclick = () => { changeCount(el.dataset.quickplus, 1); };
+    });
+    listEl.querySelectorAll('[data-quickminus]').forEach(el => {
+      el.onclick = () => { changeCount(el.dataset.quickminus, -1); };
+    });
+    listEl.querySelectorAll('[data-delitem]').forEach(el => {
+      el.onclick = () => {
+        if(confirm('Remove this item from the notebook?')){
+          data.items = data.items.filter(it => it.id !== el.dataset.delitem);
+          saveData(); renderItemsList();
+        }
+      };
+    });
+    listEl.querySelectorAll('[data-showlink]').forEach(el => {
+      el.onclick = () => showLink(el.dataset.showlink);
+    });
+  }
+
   function renderPage(){
     const page = document.getElementById('page');
     const loc = data.locations.find(l => l.id === data.activeLocation) || data.locations[0];
     if(!loc){ page.innerHTML = '<p class="empty-note">No places yet. Add one with the tab on the left.</p>'; return; }
 
-    const items = data.items.filter(it => it.locationId === loc.id);
     const titleLabel = loc.icon ? `${locIconHTML(loc)}<span>${loc.name}</span>` : `<span>${loc.name}</span>`;
     let html = `<div class="location-title"><span class="title-main">${titleLabel}</span>`;
-    html += `<button class="del-loc" data-loc="${loc.id}">remove place</button></div>`;
+    html += `<div class="title-actions"><button class="edit-loc" data-loc="${loc.id}">edit</button><button class="del-loc" data-loc="${loc.id}">remove place</button></div></div>`;
 
-    if(items.length === 0){
-      html += `<p class="empty-note">Nothing logged here yet. Add an item below.</p>`;
-    } else {
-      items.forEach(it => {
-        html += `
-          <div class="item-row">
-            <div class="item-name">${it.name}</div>
-            <button class="item-tag-btn" data-showlink="${it.id}">tag link</button>
-            <div class="item-count" data-openadjust="${it.id}">${it.count}</div>
-            <div class="item-actions">
-              <button class="icon-btn" data-quickminus="${it.id}">−</button>
-              <button class="icon-btn" data-quickplus="${it.id}">+</button>
-              <button class="icon-btn" data-delitem="${it.id}">✕</button>
-            </div>
-          </div>`;
-      });
-    }
+    html += `
+      <div class="item-controls">
+        <input type="text" id="itemSearch" placeholder="Search items..." value="${itemQuery.replace(/"/g, '&quot;')}">
+        <div class="sort-toggle">
+          <button type="button" class="sort-btn${itemSortMode === 'alpha' ? ' active' : ''}" data-sort="alpha">A–Z</button>
+          <button type="button" class="sort-btn${itemSortMode === 'stock' ? ' active' : ''}" data-sort="stock">Low stock</button>
+        </div>
+      </div>
+      <div id="itemsList"></div>`;
 
     html += `
       <div class="add-item-row">
@@ -677,27 +930,25 @@
       </div>`;
 
     page.innerHTML = html;
+    renderItemsList();
 
-    page.querySelectorAll('[data-openadjust]').forEach(el => {
-      el.onclick = () => openAdjust(el.dataset.openadjust);
-    });
-    page.querySelectorAll('[data-quickplus]').forEach(el => {
-      el.onclick = () => { changeCount(el.dataset.quickplus, 1); };
-    });
-    page.querySelectorAll('[data-quickminus]').forEach(el => {
-      el.onclick = () => { changeCount(el.dataset.quickminus, -1); };
-    });
-    page.querySelectorAll('[data-delitem]').forEach(el => {
-      el.onclick = () => {
-        if(confirm('Remove this item from the notebook?')){
-          data.items = data.items.filter(it => it.id !== el.dataset.delitem);
-          saveData(); render();
-        }
+    const searchEl = document.getElementById('itemSearch');
+    searchEl.oninput = () => { itemQuery = searchEl.value; renderItemsList(); };
+
+    page.querySelectorAll('.sort-btn').forEach(btn => {
+      btn.onclick = () => {
+        itemSortMode = btn.dataset.sort;
+        saveSortMode();
+        page.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderItemsList();
       };
     });
-    page.querySelectorAll('[data-showlink]').forEach(el => {
-      el.onclick = () => showLink(el.dataset.showlink);
-    });
+
+    const editLocBtn = page.querySelector('.edit-loc');
+    if(editLocBtn){
+      editLocBtn.onclick = () => openEditPlace(loc.id);
+    }
     const delLocBtn = page.querySelector('.del-loc');
     if(delLocBtn){
       delLocBtn.onclick = () => {
@@ -732,7 +983,7 @@
     const it = data.items.find(i => i.id === itemId);
     if(!it) return;
     it.count = Math.max(0, it.count + delta);
-    saveData(); render();
+    saveData(); renderItemsList();
   }
 
   // ---- Adjust popup (tap a count, or scan a known tag) ----
@@ -812,14 +1063,16 @@
     '🩹','🧯','🔑','🪑','🛁','🚿','🔌','💡','🧵','🪛'
   ];
 
-  let selectedPlaceIcon = `svg:${KITCHEN_ICONS[0].id}`;
-
   // Renders any icon value ("svg:id" or a raw emoji) as HTML markup.
   function iconGlyph(iconValue){
     if(!iconValue) return '';
     if(iconValue.startsWith('svg:')){
       const k = KITCHEN_ICON_MAP[iconValue.slice(4)];
       return k ? k.svg : '';
+    }
+    if(iconValue.startsWith('custom:')){
+      const c = customIcons.find(c => c.id === iconValue.slice(7));
+      return c ? c.svg : '';
     }
     return iconValue;
   }
@@ -832,8 +1085,14 @@
     return `<span class="loc-icon">${tabIcon(loc.name)}</span>`;
   }
 
-  function openAddPlace(){
-    selectedPlaceIcon = `svg:${KITCHEN_ICONS[0].id}`;
+  let selectedPlaceIcon = `svg:${KITCHEN_ICONS[0].id}`;
+  let selectedPlaceColor = TAB_SWATCHES[0];
+  let editingLocId = null;
+
+  // Renders the icon grid + color grid to reflect the current selections,
+  // without touching the name field, title, or overlay visibility — used
+  // both on first open and to refresh after adding/removing a custom icon.
+  function renderPlaceForm(){
     const grid = document.getElementById('iconGrid');
     grid.innerHTML = '';
 
@@ -875,12 +1134,100 @@
       grid.appendChild(b);
     });
 
+    const customLabel = document.createElement('div');
+    customLabel.className = 'icon-section-label';
+    customLabel.textContent = 'Custom';
+    grid.appendChild(customLabel);
+
+    customIcons.forEach(c => {
+      const value = `custom:${c.id}`;
+      const wrap = document.createElement('div');
+      wrap.className = 'icon-choice-wrap';
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.title = c.label;
+      b.className = 'icon-choice' + (value === selectedPlaceIcon ? ' selected' : '');
+      b.innerHTML = c.svg;
+      b.onclick = () => {
+        selectedPlaceIcon = value;
+        grid.querySelectorAll('.icon-choice').forEach(el => el.classList.remove('selected'));
+        b.classList.add('selected');
+      };
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'icon-choice-del';
+      del.title = 'Remove this custom icon';
+      del.textContent = '✕';
+      del.onclick = (e) => {
+        e.stopPropagation();
+        if(!confirm(`Remove the "${c.label}" icon?`)) return;
+        customIcons = customIcons.filter(ci => ci.id !== c.id);
+        saveCustomIcons();
+        if(selectedPlaceIcon === value) selectedPlaceIcon = `svg:${KITCHEN_ICONS[0].id}`;
+        renderPlaceForm();
+      };
+      wrap.appendChild(b);
+      wrap.appendChild(del);
+      grid.appendChild(wrap);
+    });
+
+    const addTile = document.createElement('button');
+    addTile.type = 'button';
+    addTile.className = 'icon-choice icon-choice-add';
+    addTile.title = 'Add a new icon';
+    addTile.textContent = '+';
+    addTile.onclick = () => openAddCustomIcon();
+    grid.appendChild(addTile);
+
+    const colorGrid = document.getElementById('colorGrid');
+    colorGrid.innerHTML = '';
+    TAB_SWATCHES.forEach(color => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'color-swatch' + (color === selectedPlaceColor ? ' selected' : '');
+      b.style.background = color;
+      b.title = color;
+      b.onclick = () => {
+        selectedPlaceColor = color;
+        colorGrid.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('selected'));
+        b.classList.add('selected');
+      };
+      colorGrid.appendChild(b);
+    });
+  }
+
+  function openAddPlace(){
+    editingLocId = null;
+    selectedPlaceIcon = `svg:${KITCHEN_ICONS[0].id}`;
+    selectedPlaceColor = TAB_SWATCHES[data.locations.length % TAB_SWATCHES.length];
+    document.getElementById('placeOverlayLabel').textContent = 'New Storage Place';
+    document.getElementById('placeOverlayTitle').textContent = 'Add a place';
+    document.getElementById('placeSave').textContent = 'Save';
+    renderPlaceForm();
     const nameInput = document.getElementById('placeName');
     nameInput.value = '';
     nameInput.classList.remove('input-error');
     document.getElementById('addPlaceOverlay').classList.add('show');
     nameInput.focus();
   }
+
+  function openEditPlace(locId){
+    const loc = data.locations.find(l => l.id === locId);
+    if(!loc) return;
+    editingLocId = locId;
+    selectedPlaceIcon = loc.icon || `svg:${KITCHEN_ICONS[0].id}`;
+    selectedPlaceColor = loc.color || TAB_SWATCHES[0];
+    document.getElementById('placeOverlayLabel').textContent = 'Edit Storage Place';
+    document.getElementById('placeOverlayTitle').textContent = 'Edit place';
+    document.getElementById('placeSave').textContent = 'Save changes';
+    renderPlaceForm();
+    const nameInput = document.getElementById('placeName');
+    nameInput.value = loc.name;
+    nameInput.classList.remove('input-error');
+    document.getElementById('addPlaceOverlay').classList.add('show');
+    nameInput.focus();
+  }
+
 
   document.getElementById('placeCancel').onclick = () => {
     document.getElementById('addPlaceOverlay').classList.remove('show');
@@ -894,9 +1241,18 @@
       nameInput.focus();
       return;
     }
-    const id = uid('loc');
-    data.locations.push({id, name, icon: selectedPlaceIcon});
-    data.activeLocation = id;
+    if(editingLocId){
+      const loc = data.locations.find(l => l.id === editingLocId);
+      if(loc){
+        loc.name = name;
+        loc.icon = selectedPlaceIcon;
+        loc.color = selectedPlaceColor;
+      }
+    } else {
+      const id = uid('loc');
+      data.locations.push({id, name, icon: selectedPlaceIcon, color: selectedPlaceColor});
+      data.activeLocation = id;
+    }
     saveData();
     document.getElementById('addPlaceOverlay').classList.remove('show');
     render();
@@ -905,6 +1261,28 @@
   document.getElementById('placeName').addEventListener('keydown', (e) => {
     if(e.key === 'Enter') saveNewPlace();
   });
+
+  // Add a custom icon: paste SVG markup copied from an icon site (see the
+  // in-app tips). Stored in localStorage so it's available for every future
+  // place you add.
+  function openAddCustomIcon(){
+    const label = prompt('Name this icon (e.g. "Reach-in Cooler"):');
+    if(!label) return;
+    let svg = prompt('Paste the SVG code for the icon (the whole <svg>...</svg> tag):');
+    if(!svg) return;
+    svg = svg.trim();
+    if(!/^<svg[\s>]/i.test(svg) || !/<\/svg>\s*$/i.test(svg)){
+      alert('That doesn\'t look like SVG markup — it should start with <svg and end with </svg>.');
+      return;
+    }
+    svg = sanitizeSvg(svg);
+    const id = uid('icon');
+    customIcons.push({id, label, svg});
+    saveCustomIcons();
+    selectedPlaceIcon = `custom:${id}`;
+    renderPlaceForm();
+  }
+
 
   // ---- Register popup (scan an unknown tag) ----
   let pendingTagId = null;
@@ -994,6 +1372,44 @@
     URL.revokeObjectURL(url);
   }
   document.getElementById('exportCsvBtn').onclick = exportCsv;
+
+  // ---- Swipe left/right between places (mobile) ----
+  function switchLocation(direction){
+    const idx = data.locations.findIndex(l => l.id === data.activeLocation);
+    if(idx === -1) return;
+    const nextIdx = idx + direction;
+    if(nextIdx < 0 || nextIdx >= data.locations.length) return;
+    data.activeLocation = data.locations[nextIdx].id;
+    saveData();
+    render();
+    const pageEl = document.getElementById('page');
+    const animClass = direction > 0 ? 'swipe-in-left' : 'swipe-in-right';
+    pageEl.classList.remove('swipe-in-left', 'swipe-in-right');
+    void pageEl.offsetWidth; // restart the animation even if the same class is reused
+    pageEl.classList.add(animClass);
+  }
+
+  (function setupSwipe(){
+    const pageEl = document.getElementById('page');
+    let startX = 0, startY = 0, tracking = false;
+    pageEl.addEventListener('touchstart', (e) => {
+      if(e.touches.length !== 1) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      tracking = true;
+    }, {passive:true});
+    pageEl.addEventListener('touchend', (e) => {
+      if(!tracking) return;
+      tracking = false;
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+      // Require a clearly horizontal, deliberate drag so vertical scrolling
+      // and normal taps never get mistaken for a swipe.
+      if(Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      switchLocation(dx < 0 ? 1 : -1);
+    }, {passive:true});
+  })();
 
   // ---- Entry point: check URL for ?tag= on load ----
   function checkTagParam(){
