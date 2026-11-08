@@ -919,6 +919,53 @@
     .sticky{ max-width:100%; padding:20px 16px 18px; }
     .counter-block button{ width:48px; height:48px; }
   }
+
+  /* ---- Playbook pass: button spec + motion (transform and opacity only) ---- */
+  :root{ --spring:cubic-bezier(.34,1.56,.64,1); --out:cubic-bezier(.2,.8,.2,1); }
+  :where(button,[role="button"],[tabindex],select,textarea):focus-visible{ outline:3px solid var(--ink); outline-offset:3px; }
+  /* Small isolated controls keep their look but get a 48px touch target */
+  .settings-gear-btn::before, .location-title .edit-loc::before, .sticky-close-x::before, .theme-toggle::before{
+    content:''; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); min-width:48px; min-height:48px; width:100%; height:100%;
+  }
+  .location-title .edit-loc, .sticky-close-x{ position:absolute; }
+  .location-title .edit-loc{ position:relative; }
+  .sticky-close-x{ position:absolute; }
+  .counter-block button{ width:48px; height:48px; }
+  .sticky-actions button{ min-height:48px; padding:0 20px; }
+  @media (pointer:coarse){
+    .sort-btn{ min-height:48px; padding:0 14px; }
+    .tab{ height:48px; }
+    #placeDelete{ width:48px; height:48px; }
+    .add-item-row .icon-btn, .add-item-row button{ width:48px; height:48px; }
+    .item-controls input[type="text"], .add-item-row input{ min-height:48px; }
+  }
+  /* Press: sinks fast (80ms), releases with a spring (400ms) */
+  .icon-btn, .settings-gear-btn, .sort-btn, .sticky-actions button, .counter-block button, .sticky-close-x, .settings-icon-btn,
+  .theme-toggle, .add-item-row button, .color-swatch, .icon-choice{
+    transition: transform 400ms var(--spring), background-color 150ms, color 150ms, opacity 150ms, border-color 150ms;
+  }
+  .icon-btn:active, .sort-btn:active, .sticky-actions button:active, .counter-block button:active, .sticky-close-x:active,
+  .settings-icon-btn:active, .theme-toggle:active, .add-item-row button:active, .color-swatch:active, .icon-choice:active{
+    transform:scale(.92); transition-duration:80ms;
+  }
+  .settings-gear-btn:active{ transform:rotate(35deg) scale(.92); transition-duration:80ms; }
+  .tab:not(.active):active, .tab-add:active{ transform:translateX(-14px) scale(.96); }
+  .theme-toggle-knob{ transition:transform 300ms var(--spring); }
+  /* Tab switch: the page's sections rise in one after another */
+  @keyframes rise{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:none; } }
+  .page.enter > *{ animation:rise 420ms var(--out) backwards; }
+  .page.enter > :nth-child(2){ animation-delay:60ms; }
+  .page.enter > :nth-child(3){ animation-delay:120ms; }
+  .page.enter > :nth-child(4){ animation-delay:180ms; }
+  /* Popups: the backdrop fades and the sticky note slaps on with a little bounce */
+  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+  @keyframes stickyIn{ from{ opacity:0; transform:translateY(16px) rotate(-4deg) scale(.94); } to{ opacity:1; transform:rotate(-1.5deg); } }
+  .overlay.show{ animation:fadeIn 200ms ease; }
+  .overlay.show .sticky{ animation:stickyIn 340ms var(--spring); }
+  /* Motion off when asked */
+  @media (prefers-reduced-motion:reduce){
+    *, *::before, *::after{ animation-duration:.01ms !important; animation-iteration-count:1 !important; animation-delay:0ms !important; transition-duration:.01ms !important; }
+  }
 </style>
 </head>
 <body>
@@ -944,12 +991,12 @@
     <div class="loc-label" id="adjustLoc">LOCATION</div>
     <div class="adjust-name-row">
       <button type="button" id="adjustIconBtn" class="icon-btn" title="Change icon" aria-label="Change icon"></button>
-      <input type="text" id="adjustName" class="adjust-name-input">
+      <input type="text" id="adjustName" class="adjust-name-input" aria-label="Item name">
     </div>
     <div class="counter-block">
-      <button id="adjustMinus">−</button>
+      <button id="adjustMinus" aria-label="Decrease count">−</button>
       <div class="count-display" id="adjustCount">0</div>
-      <button id="adjustPlus">+</button>
+      <button id="adjustPlus" aria-label="Increase count">+</button>
     </div>
     <div class="sticky-actions">
       <button id="adjustDone">Done</button>
@@ -1187,14 +1234,17 @@
       btn.className = 'tab' + (loc.id === data.activeLocation ? ' active' : '');
       btn.style.background = loc.color || TAB_COLORS[i % TAB_COLORS.length];
       btn.title = loc.name;
+      btn.setAttribute('aria-label', loc.name);
+      if(loc.id === data.activeLocation) btn.setAttribute('aria-current','page');
       const tabLabel = loc.icon ? `<span class="tab-label-icon">${iconGlyph(loc.icon)}</span> ${loc.name}` : loc.name;
       btn.innerHTML = `<span class="tab-icon">${iconGlyph(loc.icon) || tabIcon(loc.name)}</span><span class="tab-label">${tabLabel}</span>`;
-      btn.onclick = () => { data.activeLocation = loc.id; saveData(); render(); };
+      btn.onclick = () => { const pg = document.getElementById('page'); pg.classList.add('enter'); setTimeout(() => pg.classList.remove('enter'), 700); data.activeLocation = loc.id; saveData(); render(); };
       tabsEl.appendChild(btn);
     });
     const addBtn = document.createElement('button');
     addBtn.className = 'tab tab-add';
     addBtn.title = 'Add a new place';
+    addBtn.setAttribute('aria-label','Add a new place');
     addBtn.innerHTML = `<span class="tab-icon">+</span><span class="tab-label">+ new place</span>`;
     addBtn.onclick = () => { openAddPlace(); };
     tabsEl.appendChild(addBtn);
@@ -1232,12 +1282,12 @@
         ${letterHtml}
         ${iconHtml}
         <div class="item-name">${it.name}</div>
-        <button class="icon-btn item-tag-btn" data-showlink="${it.id}" title="Write to NFC tag">${LINK_SVG}</button>
+        <button class="icon-btn item-tag-btn" data-showlink="${it.id}" title="Write to NFC tag" aria-label="Write to NFC tag">${LINK_SVG}</button>
         <div class="item-actions">
-          <button class="icon-btn" data-quickminus="${it.id}">−</button>
-          <div class="item-count${countClass}" data-openadjust="${it.id}">${it.count}</div>
-          <button class="icon-btn" data-quickplus="${it.id}">+</button>
-          <button class="icon-btn" data-delitem="${it.id}">✕</button>
+          <button class="icon-btn" data-quickminus="${it.id}" aria-label="Decrease count">−</button>
+          <div class="item-count${countClass}" data-openadjust="${it.id}" role="button" tabindex="0">${it.count}</div>
+          <button class="icon-btn" data-quickplus="${it.id}" aria-label="Increase count">+</button>
+          <button class="icon-btn" data-delitem="${it.id}" aria-label="Remove item">✕</button>
         </div>
       </div>`;
   }
@@ -1300,11 +1350,11 @@
 
     const titleLabel = loc.icon ? `${locIconHTML(loc)}<span>${loc.name}</span>` : `<span>${loc.name}</span>`;
     let html = `<div class="location-title"><span class="title-main">${titleLabel}</span>`;
-    html += `<div class="title-actions"><button class="edit-loc" data-loc="${loc.id}" title="Edit place">${PENCIL_SVG}</button></div></div>`;
+    html += `<div class="title-actions"><button class="edit-loc" data-loc="${loc.id}" title="Edit place" aria-label="Edit place">${PENCIL_SVG}</button></div></div>`;
 
     html += `
       <div class="item-controls">
-        <input type="text" id="itemSearch" placeholder="Search items..." value="${itemQuery.replace(/"/g, '&quot;')}">
+        <input type="text" id="itemSearch" aria-label="Search items" placeholder="Search items..." value="${itemQuery.replace(/"/g, '&quot;')}">
         <div class="sort-toggle">
           <button type="button" class="sort-btn${itemSortMode === 'alpha' ? ' active' : ''}" data-sort="alpha">A–Z</button>
           <button type="button" class="sort-btn${itemSortMode === 'stock' ? ' active' : ''}" data-sort="stock">Low stock</button>
@@ -1315,9 +1365,9 @@
     html += `
       <div class="add-item-row">
         <button type="button" id="newItemIconBtn" class="icon-btn" title="Choose icon" aria-label="Choose icon" style="flex-shrink:0;">${newItemIcon ? iconGlyph(newItemIcon) : ICON_PICK_SVG}</button>
-        <input type="text" id="newItemName" placeholder="New item name...">
-        <input type="number" id="newItemCount" value="1" min="0">
-        <button id="addItemBtn" title="Add item">+</button>
+        <input type="text" id="newItemName" aria-label="New item name" placeholder="New item name...">
+        <input type="number" id="newItemCount" aria-label="Starting count" value="1" min="0">
+        <button id="addItemBtn" title="Add item" aria-label="Add item">+</button>
       </div>`;
 
     page.innerHTML = html;
@@ -2229,5 +2279,25 @@
   checkTagParam();
 </script>
 
+<script>
+/* Dialog and keyboard basics */
+(function(){
+  document.querySelectorAll('.overlay').forEach(function(o){
+    o.setAttribute('role', o.id==='confirmOverlay' ? 'alertdialog' : 'dialog');
+    o.setAttribute('aria-modal','true');
+    var h=o.querySelector('h2')||o.querySelector('.loc-label');
+    if(h){ if(!h.id) h.id=o.id+'-title'; o.setAttribute('aria-labelledby',h.id); }
+  });
+  document.addEventListener('keydown',function(e){
+    var t=e.target;
+    if((e.key==='Enter'||e.key===' ')&&t.matches&&t.matches('.item-count[role="button"]')){ e.preventDefault(); t.click(); return; }
+    if(e.key!=='Escape')return;
+    var open=document.querySelectorAll('.overlay.show'); if(!open.length)return;
+    var top=open[open.length-1];
+    var c=top.querySelector('.sticky-close-x, #confirmCancel, #linkDone, #adjustDone, #customIconCancel');
+    if(c) c.click();
+  });
+})();
+</script>
 </body>
 </html>
